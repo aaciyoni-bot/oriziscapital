@@ -2,29 +2,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORIZIS CAPITAL - Smart Loans in Zambia</title>
+    <title>ORIZIS CAPITAL - Premium Financing</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
-    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0b1a30',
+                            gold: '#d4af37',
+                            goldhover: '#bfa030',
+                            light: '#f4f7f6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .bg-brand-dark { background-color: #0f172a; }
-        .text-brand-dark { color: #0f172a; }
-        .bg-brand-gold { background-color: #d4af37; }
-        .text-brand-gold { color: #d4af37; }
-        .border-brand-gold { border-color: #d4af37; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
         
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
         .hide { display: none !important; }
         
+        /* Premium Range Sliders */
         input[type="range"] {
-            accent-color: #d4af37;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #d4af37;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #d4af37;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         /* Toast Notifications */
         #toast-container {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
             z-index: 9999;
             display: flex;
@@ -32,725 +77,640 @@
             gap: 10px;
         }
         .toast {
-            min-width: 300px;
+            min-width: 250px;
             padding: 16px 20px;
             border-radius: 8px;
             color: white;
             font-weight: 600;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            transform: translateX(100%);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-out;
         }
         .toast.show {
             transform: translateX(0);
-            opacity: 1;
         }
-        .toast.success { background-color: #10b981; border-left: 6px solid #047857; }
-        .toast.error { background-color: #ef4444; border-left: 6px solid #b91c1c; }
-        
-        /* Loading Overlay */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #d4af37;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
+        .toast.success { background-color: #10b981; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #0b1a30; border-left: 4px solid #d4af37; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="text-gray-800 antialiased overflow-x-hidden">
+<body class="text-gray-800 antialiased h-screen flex flex-col overflow-x-hidden">
 
     <div id="toast-container"></div>
 
     <!-- Header -->
-    <header class="bg-brand-dark text-white p-4 shadow-xl sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="text-2xl font-black tracking-widest">
-                ORIZIS <span class="text-brand-gold">CAPITAL</span>
+    <header class="bg-brand-dark text-white px-6 py-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="text-2xl font-black text-brand-gold tracking-widest cursor-pointer" onclick="showView('home-view')">
+                ORIZIS CAPITAL
             </div>
-            <div class="flex items-center gap-4">
-                <span class="text-sm font-semibold hidden md:inline text-gray-300"><i class="fa-solid fa-location-dot text-brand-gold mr-1"></i> Lusaka, Zambia</span>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm font-medium opacity-80 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Zambia (ZMW)
+                </span>
+                <button onclick="toggleLoginModal()" class="bg-brand-gold text-brand-dark px-4 py-2 rounded-lg font-bold hover:bg-brand-goldhover transition shadow-md text-sm">
+                    Login / Portal
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Marketing Banner -->
-    <section class="bg-brand-dark pt-12 pb-24 px-4 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-        <div class="max-w-4xl mx-auto text-center relative z-10">
-            <h1 id="banner-title" class="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-lg transition-opacity duration-500">Need to close the month?</h1>
-            <p id="banner-subtitle" class="text-xl md:text-2xl text-brand-gold font-semibold transition-opacity duration-500">Loans from 500 ZMW in a fast and secure process.</p>
-        </div>
-    </section>
+    <!-- Main Content Area -->
+    <main class="flex-grow w-full relative">
+        
+        <!-- ======================================================= -->
+        <!-- VIEW 1: HOME (BORROWER INTERFACE)                       -->
+        <!-- ======================================================= -->
+        <div id="home-view" class="w-full pb-20">
+            
+            <!-- Dynamic Banner -->
+            <div class="bg-gradient-to-br from-brand-dark to-blue-900 text-white py-16 px-6 text-center shadow-inner relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSI+PC9yZWN0Pgo8cGF0aCBkPSJNMCAwTDggOFpNOCAwTDAgOFoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSI+PC9wYXRoPgo8L3N2Zz4=')]"></div>
+                <div class="max-w-3xl mx-auto relative z-10">
+                    <h1 id="banner-title" class="text-4xl md:text-5xl font-black text-brand-gold mb-4 transition-all duration-500">Need funding?</h1>
+                    <p id="banner-subtitle" class="text-xl md:text-2xl font-light transition-all duration-500">Loans starting from 500 ZMW, fast and secure.</p>
+                </div>
+            </div>
 
-    <!-- Main Calculator Area -->
-    <section class="max-w-5xl mx-auto px-4 -mt-16 relative z-20 pb-20">
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
-            <div class="grid grid-cols-1 md:grid-cols-5">
-                
-                <!-- Calculator Inputs -->
-                <div class="col-span-3 p-8 md:p-10">
-                    <h2 class="text-2xl font-bold text-brand-dark mb-6 border-b pb-4"><i class="fa-solid fa-calculator text-brand-gold mr-2"></i> Tailor Your Loan</h2>
+            <!-- Calculator Container -->
+            <div class="max-w-5xl mx-auto -mt-10 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 z-20 relative mx-4 lg:mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-5">
                     
-                    <div class="space-y-6">
-                        <!-- Amount -->
-                        <div>
-                            <label class="block text-sm font-semibold text-brand-dark mb-2">Loan Amount (ZMW)</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-3 text-gray-500 font-bold">ZMW</span>
-                                <input type="number" id="calc-amount" min="500" max="50000" value="5000" step="100" class="w-full pl-14 p-3 border-2 border-gray-200 rounded-xl focus:border-brand-gold outline-none text-lg font-bold transition" onchange="calculateSpitzer()">
+                    <!-- Left: Form Input -->
+                    <div class="lg:col-span-3 p-8">
+                        <h2 class="text-2xl font-bold text-brand-dark mb-6 border-b pb-2">Customize Your Loan</h2>
+                        
+                        <div class="space-y-8">
+                            <!-- Amount Slider & Input -->
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm">
+                                <div class="flex justify-between items-center mb-4">
+                                    <label class="block text-sm font-bold text-brand-dark">Loan Amount</label>
+                                    <div class="relative w-1/2 md:w-1/3">
+                                        <span class="absolute left-3 top-2.5 text-gray-500 font-bold text-sm">ZMW</span>
+                                        <input type="number" id="calc-amount" min="500" max="50000" value="5000" step="100" class="w-full pl-12 p-2 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none text-lg font-black transition text-right bg-white" oninput="syncAmount('num')">
+                                    </div>
+                                </div>
+                                <input type="range" id="calc-amount-slider" min="500" max="50000" value="5000" step="100" class="w-full cursor-pointer" oninput="syncAmount('slider')">
+                                <div class="flex justify-between text-xs text-gray-400 mt-2 font-bold">
+                                    <span>500 ZMW</span>
+                                    <span>50,000 ZMW</span>
+                                </div>
                             </div>
-                            <p class="text-xs text-gray-400 mt-1">Between 500 and 50,000 ZMW</p>
-                        </div>
 
-                        <!-- Track Selection -->
-                        <div>
-                            <label class="block text-sm font-semibold text-brand-dark mb-2">Select Loan Track</label>
-                            <select id="calc-track" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-brand-gold outline-none bg-white font-medium" onchange="handleTrackChange()">
-                                <option value="regular">Regular - Standard Terms</option>
-                                <option value="farmer">Farmer (3 Months Grace)</option>
-                                <option value="new_biz">New Business (1 Month Grace)</option>
-                                <option value="single_mom">Single Mother (Interest Discount)</option>
-                                <option value="partner">Partner Loan (VIP)</option>
-                                <option value="gov_employee">Government Employee (Salary Deduction)</option>
-                            </select>
-                        </div>
-
-                        <!-- Gov Employee Code Box -->
-                        <div id="gov-code-box" class="hide bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
-                            <label class="block text-sm font-bold text-green-800 mb-1"><i class="fa-solid fa-lock mr-1"></i> Enter Gov Employee Code for Payroll Verification:</label>
-                            <input type="text" id="gov-emp-code" placeholder="e.g. GOV-88392" class="w-full p-2 border border-green-300 rounded outline-none focus:border-green-600 font-mono text-sm mt-1">
-                            <p class="text-xs text-green-700 mt-1">Required to approve the loan via direct deduction.</p>
-                        </div>
-
-                        <!-- Collateral & Months Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Track Selection -->
                             <div>
-                                <label class="block text-sm font-semibold text-brand-dark mb-2">Provide Collateral?</label>
-                                <select id="calc-collateral-toggle" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-brand-gold outline-none bg-white" onchange="calculateSpitzer()">
-                                    <option value="yes">Yes - 79.92% Annual Rate</option>
-                                    <option value="no">No - 12% Monthly Rate</option>
+                                <label class="block text-sm font-bold text-brand-dark mb-2">Loan Track / Category</label>
+                                <select id="calc-track" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-brand-gold outline-none bg-white font-medium" onchange="handleTrackChange()">
+                                    <option value="regular">Regular Loan</option>
+                                    <option value="farmer">Farmer (3 Months Grace)</option>
+                                    <option value="business">New Business (1 Month Grace)</option>
+                                    <option value="mother">Single Mother (1% Discount)</option>
+                                    <option value="gov">Government Employee (Salary Deduction)</option>
+                                    <option value="partner">Partner Loan (VIP)</option>
                                 </select>
                             </div>
+
+                            <!-- Government Code Box (Hidden by default) -->
+                            <div id="gov-code-box" class="hide bg-green-50 border-2 border-green-500 rounded-xl p-5 shadow-inner">
+                                <div class="flex items-center text-green-800 font-bold mb-2">
+                                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                    Secure Government Verification
+                                </div>
+                                <p class="text-sm text-green-700 mb-3">Please enter your official Government Employee ID to link direct salary deduction.</p>
+                                <input type="text" id="gov-emp-code" placeholder="Enter ID e.g., GOV-12345" class="w-full p-3 border-2 border-green-300 rounded-lg focus:border-green-600 outline-none font-mono">
+                            </div>
+
+                            <!-- Collateral & Months Row -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm">
+                                <div>
+                                    <label class="block text-sm font-bold text-brand-dark mb-2">Provide Collateral?</label>
+                                    <select id="calc-collateral-toggle" class="w-full p-3 border-2 border-white rounded-xl focus:border-brand-gold outline-none bg-white shadow-sm font-medium" onchange="calculateSpitzer()">
+                                        <option value="yes">Yes - 79.92% Annual Rate</option>
+                                        <option value="no">No - 12% Monthly Rate</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="block text-sm font-bold text-brand-dark">Term Length</label>
+                                        <span id="calc-months-display" class="text-brand-gold font-black bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-100">12 Months</span>
+                                    </div>
+                                    <input type="range" id="calc-months" min="3" max="60" value="12" class="w-full mt-2 cursor-pointer" oninput="calculateSpitzer()">
+                                    <div class="flex justify-between text-xs text-gray-400 mt-2 font-bold">
+                                        <span>3 Months</span>
+                                        <span>60 Months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Collateral Requirement Info -->
+                            <div id="collateral-info" class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-xl text-sm font-medium flex items-start">
+                                <svg class="w-6 h-6 mr-3 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div>
+                                    <strong class="block mb-1 text-base">Collateral Requirement (40% LTV)</strong>
+                                    To receive the requested <span class="font-bold underline amount-requested">5,000</span> ZMW, you must pledge an asset (Car, Property, Electronics) valued at exactly or above <span id="collateral-required-val" class="font-black text-lg text-brand-dark mx-1">12,500</span> ZMW.
+                                </div>
+                            </div>
+
+                            <!-- Document Upload -->
                             <div>
-                                <label class="block text-sm font-semibold text-brand-dark mb-2">Term: <span id="calc-months-display" class="text-brand-gold font-black">12 Months</span></label>
-                                <input type="range" id="calc-months" min="3" max="60" value="12" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-3" oninput="calculateSpitzer()">
+                                <label class="block text-sm font-bold text-brand-dark mb-2">Required Documents</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer" onclick="document.getElementById('file-upload').click()">
+                                    <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <span class="text-gray-500 font-medium block">Click to upload ID, Payslip & Collateral Photos</span>
+                                    <span class="text-xs text-gray-400">PDF, JPG, PNG up to 10MB</span>
+                                    <input type="file" id="file-upload" class="hidden" multiple onchange="handleFileUpload(this)">
+                                </div>
+                                <div id="file-count" class="text-xs text-green-600 font-bold mt-2 text-center hide">Files uploaded successfully!</div>
                             </div>
-                        </div>
 
-                        <!-- Collateral Requirement Info -->
-                        <div id="collateral-info-box" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-4">
-                            <div class="flex items-center gap-3">
-                                <i class="fa-solid fa-shield-halved text-yellow-600 text-xl"></i>
-                                <p class="text-sm text-yellow-800 font-medium">
-                                    We provide funding up to 40% of the collateral's value! You get a massive discount.<br>
-                                    <strong class="text-lg">Required Collateral Value: <span id="calc-collateral">12500</span> ZMW</strong>
-                                </p>
-                            </div>
                         </div>
-                        
-                        <!-- Document Uploads -->
-                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
-                            <h3 class="text-md font-bold text-brand-dark mb-4 border-b pb-2"><i class="fa-solid fa-file-arrow-up mr-2 text-brand-gold"></i> Upload Required Documents</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 mb-1">ID / Passport <span class="text-red-500">*</span></label>
-                                    <input type="file" id="upload-id" accept="image/*,.pdf" class="w-full text-xs text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-bold file:bg-brand-dark file:text-white hover:file:bg-gray-800 cursor-pointer">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 mb-1">Payslip / Income Proof</label>
-                                    <input type="file" id="upload-income" accept="image/*,.pdf" class="w-full text-xs text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-bold file:bg-brand-dark file:text-white hover:file:bg-gray-800 cursor-pointer">
-                                </div>
-                                <div id="upload-collateral-box" class="col-span-1 md:col-span-2">
-                                    <label class="block text-xs font-bold text-gray-700 mb-1">Proof of Ownership (Collateral Photo) <span class="text-red-500">*</span></label>
-                                    <input type="file" id="upload-collateral" multiple accept="image/*,.pdf" class="w-full text-xs text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-bold file:bg-brand-gold file:text-brand-dark hover:file:bg-yellow-600 cursor-pointer">
-                                </div>
-                            </div>
-                        </div>
-
-                        <button onclick="submitLoanRequest()" class="w-full bg-brand-dark text-white text-xl font-bold py-4 rounded-xl hover:bg-brand-gold hover:text-brand-dark transition-all duration-300 shadow-lg flex justify-center items-center gap-2">
-                            <span>Submit Loan Request Now</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
                     </div>
-                </div>
 
-                <!-- Results Display -->
-                <div class="col-span-2 bg-brand-dark text-white p-8 md:p-10 flex flex-col justify-center relative">
-                    <div class="absolute top-0 right-0 p-4 opacity-10">
-                        <i class="fa-solid fa-coins text-9xl"></i>
-                    </div>
-                    <div class="relative z-10 text-center">
-                        <h3 class="text-brand-gold text-lg font-bold mb-2 uppercase tracking-wider">Your Monthly Payment</h3>
-                        <div class="text-5xl md:text-6xl font-black mb-2 leading-none" id="res-monthly-pmt">0</div>
-                        <div class="text-gray-400 font-semibold mb-8">ZMW / Month</div>
+                    <!-- Right: Result Display -->
+                    <div class="lg:col-span-2 bg-brand-dark text-white p-8 flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-[-50px] right-[-50px] w-40 h-40 bg-brand-gold rounded-full opacity-20 blur-2xl"></div>
+                        <div class="absolute bottom-[-50px] left-[-50px] w-40 h-40 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
                         
-                        <div class="bg-gray-800 bg-opacity-50 p-6 rounded-xl border border-gray-700 backdrop-blur-sm">
-                            <h4 class="text-sm text-gray-300 font-medium mb-1">Estimated Weekly Payment:</h4>
-                            <div class="text-2xl font-bold text-white"><span id="res-weekly-pmt">0</span> ZMW</div>
-                            <div class="mt-4 text-xs text-gray-400 text-left space-y-1">
-                                <p><i class="fa-solid fa-check text-brand-gold mr-1"></i> Fixed Spitzer Schedule</p>
-                                <p><i class="fa-solid fa-check text-brand-gold mr-1"></i> No hidden fees</p>
-                                <p id="grace-note" class="hide text-green-400"><i class="fa-solid fa-gift mr-1"></i> Grace period applied!</p>
+                        <div class="relative z-10">
+                            <h3 class="text-xl font-bold text-brand-gold mb-8 uppercase tracking-wide">Repayment Summary</h3>
+                            
+                            <div class="mb-8">
+                                <div class="text-sm opacity-80 mb-1">Monthly Payment</div>
+                                <div class="flex items-baseline border-b border-gray-600 pb-4">
+                                    <span id="res-monthly" class="text-5xl font-black">0</span>
+                                    <span class="text-xl ml-2 font-medium">ZMW</span>
+                                </div>
                             </div>
+
+                            <div class="mb-8">
+                                <div class="text-sm opacity-80 mb-1">Weekly Breakdown</div>
+                                <div class="flex items-baseline">
+                                    <span id="res-weekly" class="text-3xl font-bold text-gray-300">0</span>
+                                    <span class="text-lg ml-2 font-medium text-gray-400">ZMW / week</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white/10 p-4 rounded-xl text-sm leading-relaxed border border-white/5">
+                                <strong class="text-brand-gold">Spitzer Model Active:</strong> Fixed payments throughout the entire period. Covers both principal and interest seamlessly.
+                                <span id="grace-note" class="block mt-2 text-green-400 font-bold hide">Includes Grace Period Benefit!</span>
+                            </div>
+                        </div>
+
+                        <div class="relative z-10 mt-8">
+                            <button onclick="submitLoanApplication()" class="w-full bg-brand-gold hover:bg-brand-goldhover text-brand-dark font-black text-lg py-4 rounded-xl shadow-lg transition-transform transform hover:scale-[1.02]">
+                                Submit Application
+                            </button>
+                            <p class="text-center text-xs opacity-60 mt-4">Safe, secure, and regulated in Zambia.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    
-    <!-- Floating Admin/Investor Login Button -->
-    <button onclick="document.getElementById('login-modal').classList.remove('hidden')" class="fixed bottom-6 right-6 bg-brand-dark text-white p-4 rounded-full shadow-2xl hover:bg-brand-gold hover:text-brand-dark transition-all z-50 flex items-center gap-2 border-2 border-brand-gold group">
-        <i class="fa-solid fa-user-tie text-xl"></i>
-        <span class="font-bold hidden sm:inline px-2 max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">Admin / Investor</span>
-    </button>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 2: ADMIN DASHBOARD                                 -->
+        <!-- ======================================================= -->
+        <div id="admin-view" class="w-full hidden pb-20 px-4 md:px-10 pt-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-center mb-8 border-b-2 border-gray-200 pb-4">
+                    <h2 class="text-3xl font-black text-brand-dark">Admin Control Center</h2>
+                    <button onclick="logout()" class="text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded">Logout</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+                        <div class="text-sm text-gray-500 font-bold">Total Pending Requests</div>
+                        <div id="admin-pending-count" class="text-3xl font-black text-brand-dark mt-2">0</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
+                        <div class="text-sm text-gray-500 font-bold">System Status</div>
+                        <div class="text-xl font-black text-green-600 mt-2">Online & Secure</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-bold text-gray-800">Pending Loan Approvals</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="admin-loan-list" class="space-y-4">
+                            <!-- Dynamic loan rows inserted here -->
+                            <div class="text-center text-gray-400 py-10 font-medium">No pending requests right now.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 3: INVESTOR DASHBOARD (YOAV HANER)                 -->
+        <!-- ======================================================= -->
+        <div id="investor-view" class="w-full hidden pb-20 px-4 md:px-10 pt-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-center mb-8 border-b-2 border-gray-200 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-brand-dark">Investor Portfolio</h2>
+                        <p class="text-brand-gold font-bold">Welcome back, YOAV HANER</p>
+                    </div>
+                    <button onclick="logout()" class="text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded">Logout</button>
+                </div>
+
+                <!-- Portfolio Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-brand-dark text-white p-6 rounded-xl shadow-md">
+                        <div class="text-sm opacity-80 font-bold uppercase">Total Capital</div>
+                        <!-- 108,000 ILS converted roughly to ZMW (1:7) for presentation -->
+                        <div class="text-3xl font-black text-brand-gold mt-2">756,000 ZMW</div>
+                        <div class="text-xs opacity-60 mt-1">(Original: 108,000 ILS)</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                        <div class="text-sm text-gray-500 font-bold uppercase">Active Investment</div>
+                        <div class="text-3xl font-black text-blue-600 mt-2">12%</div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 12%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                        <div class="text-sm text-gray-500 font-bold uppercase">Target Monthly Yield</div>
+                        <div class="text-3xl font-black text-green-500 mt-2">3.33%</div>
+                        <div class="text-sm text-gray-400 mt-1">On deployed capital</div>
+                    </div>
+                </div>
+
+                <!-- Weekly Returns & Active Assets -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Your Active Yield Generating Assets</h3>
+                        <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
+                            Weekly Return: <span id="investor-weekly-total">0</span> ZMW
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="investor-asset-list" class="space-y-3">
+                            <!-- Approved loans shown here -->
+                            <div class="text-center text-gray-400 py-10 font-medium">Waiting for new loans to be approved and assigned...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
 
     <!-- Login Modal -->
-    <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white p-8 rounded-2xl w-full max-w-md relative shadow-2xl border-t-8 border-brand-gold">
-            <button onclick="document.getElementById('login-modal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
-            <div class="text-center mb-6">
-                <h2 class="text-3xl font-black text-brand-dark tracking-wide">ORIZIS <span class="text-brand-gold">CAPITAL</span></h2>
-                <p class="text-gray-500 text-sm mt-2 font-medium">Internal Management System Login</p>
-            </div>
+    <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative transform scale-95 transition-transform duration-300" id="login-box">
+            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-2xl font-black text-brand-dark mb-2">Portal Login</h3>
+            <p class="text-sm text-gray-500 mb-6">Access Admin or Investor dashboard.</p>
+            
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Username</label>
-                    <input type="text" id="login-user" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none transition bg-gray-50 text-left font-mono" placeholder="e.g. ADMIN">
+                    <input type="text" id="login-user" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
-                    <input type="password" id="login-pass" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none transition bg-gray-50 text-left font-mono" placeholder="••••••••">
+                    <input type="password" id="login-pass" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none">
                 </div>
-                <button onclick="handleLogin()" class="w-full bg-brand-gold text-brand-dark text-lg font-bold py-3 rounded-lg hover:bg-yellow-500 transition-colors mt-2 shadow-lg">Login to System</button>
+                <button onclick="processLogin()" class="w-full bg-brand-dark text-brand-gold font-bold py-3 rounded-lg hover:bg-gray-800 transition">Authenticate</button>
+            </div>
+            
+            <div class="mt-4 text-xs text-gray-400 text-center">
+                Hint: YOAV/YOAVH for investor, ADMIN/ADMIN for admin.
             </div>
         </div>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div id="admin-dashboard" class="hidden fixed inset-0 bg-gray-100 z-50 overflow-y-auto">
-        <div class="bg-brand-dark text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-40 border-b-4 border-brand-gold">
-            <div class="flex items-center gap-4">
-                <h2 class="text-2xl font-black tracking-wide"><i class="fa-solid fa-building-shield text-brand-gold mr-2"></i> ORIZIS <span class="text-brand-gold">ADMIN</span></h2>
-            </div>
-            <button onclick="logoutAdmin()" class="bg-red-500 hover:bg-red-600 px-5 py-2 rounded-lg text-sm font-bold transition-colors shadow-inner flex items-center gap-2">Logout <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
-        </div>
-        <div class="p-6 max-w-7xl mx-auto">
-            <h1 class="text-3xl font-bold text-brand-dark mb-6">Dashboard - Loan Requests</h1>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl shadow-md border-l-4 border-blue-500 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-gray-500 text-sm font-bold mb-1">Pending Requests</h3>
-                        <p class="text-4xl font-black text-brand-dark" id="admin-total-reqs">0</p>
-                    </div>
-                    <i class="fa-solid fa-clock-rotate-left text-4xl text-blue-100"></i>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-md border-l-4 border-brand-gold flex items-center justify-between">
-                    <div>
-                        <h3 class="text-gray-500 text-sm font-bold mb-1">Approved Volume (ZMW)</h3>
-                        <p class="text-4xl font-black text-brand-dark" id="admin-total-vol">0</p>
-                    </div>
-                    <i class="fa-solid fa-coins text-4xl text-yellow-100"></i>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-md border-l-4 border-green-500 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-gray-500 text-sm font-bold mb-1">Available Investors</h3>
-                        <p class="text-4xl font-black text-brand-dark">1</p>
-                    </div>
-                    <i class="fa-solid fa-users text-4xl text-green-100"></i>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-                <div class="p-5 border-b bg-gray-50 flex justify-between items-center">
-                    <h3 class="font-bold text-xl text-brand-dark"><i class="fa-solid fa-inbox text-brand-gold mr-2"></i> Incoming Web Requests Inbox</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[900px]">
-                        <thead>
-                            <tr class="bg-brand-dark text-white text-sm">
-                                <th class="p-4 font-semibold">Req ID</th>
-                                <th class="p-4 font-semibold">Client Name</th>
-                                <th class="p-4 font-semibold">Amount / Term</th>
-                                <th class="p-4 font-semibold">Track</th>
-                                <th class="p-4 font-semibold">Req. Collateral (40%)</th>
-                                <th class="p-4 font-semibold text-center">Documents</th>
-                                <th class="p-4 font-semibold text-center">Status</th>
-                                <th class="p-4 font-semibold text-center">Admin Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-loans-table" class="divide-y divide-gray-100">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Investor Dashboard (Yoav Haner) -->
-    <div id="investor-dashboard" class="hidden fixed inset-0 bg-gray-100 z-50 overflow-y-auto">
-        <div class="bg-brand-dark text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-40 border-b-4 border-brand-gold">
-            <div class="flex items-center gap-4">
-                <h2 class="text-2xl font-black tracking-wide"><i class="fa-solid fa-chart-line text-brand-gold mr-2"></i> ORIZIS <span class="text-brand-gold">INVESTOR</span></h2>
-            </div>
-            <button onclick="logoutAdmin()" class="bg-red-500 hover:bg-red-600 px-5 py-2 rounded-lg text-sm font-bold transition-colors shadow-inner flex items-center gap-2">Logout <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
-        </div>
-        
-        <div class="p-6 max-w-6xl mx-auto">
-            <div class="bg-white rounded-2xl p-8 shadow-xl border border-gray-200 mb-8 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-gold opacity-10 rounded-bl-full"></div>
-                <h1 class="text-3xl font-black text-brand-dark mb-2">Personal Investor Area</h1>
-                <p class="text-gray-500 font-medium text-lg mb-8">Welcome back, <span class="text-brand-gold font-bold">Yoav Haner</span></p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm">
-                        <p class="text-sm font-bold text-gray-500 mb-1">Total Capital</p>
-                        <p class="text-3xl font-black text-brand-dark" id="inv-total">0</p>
-                        <p class="text-xs text-gray-400 mt-1">ZMW (Converted)</p>
-                    </div>
-                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm">
-                        <p class="text-sm font-bold text-blue-600 mb-1">Available to Invest</p>
-                        <p class="text-3xl font-black text-blue-900" id="inv-avail">0</p>
-                        <p class="text-xs text-blue-400 mt-1">Ready for Allocation</p>
-                    </div>
-                    <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-100 shadow-sm">
-                        <p class="text-sm font-bold text-yellow-700 mb-1">Utilized Capital (12%)</p>
-                        <p class="text-3xl font-black text-yellow-900" id="inv-used">0</p>
-                        <p class="text-xs text-yellow-600 mt-1">Active in Loans</p>
-                    </div>
-                    <div class="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm relative overflow-hidden">
-                        <div class="absolute -right-4 -bottom-4 text-green-200 opacity-50"><i class="fa-solid fa-sack-dollar text-6xl"></i></div>
-                        <p class="text-sm font-bold text-green-700 mb-1 relative z-10">Exp. Monthly Return (3.33%)</p>
-                        <p class="text-3xl font-black text-green-900 relative z-10" id="inv-profit">0</p>
-                        <p class="text-xs text-green-600 mt-1 relative z-10">Based on active portfolio</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-                    <div class="p-5 border-b bg-gray-50 flex justify-between items-center">
-                        <h3 class="font-bold text-xl text-brand-dark"><i class="fa-solid fa-list-check text-brand-gold mr-2"></i> Active Loans Portfolio</h3>
-                    </div>
-                    <div class="p-0">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-gray-100 text-gray-600 text-xs uppercase tracking-wider">
-                                    <th class="p-4 font-bold">Loan ID</th>
-                                    <th class="p-4 font-bold">Allocated Amount</th>
-                                    <th class="p-4 font-bold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="investor-loans-table" class="divide-y divide-gray-100">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="bg-brand-dark rounded-2xl shadow-xl p-6 text-white border-t-8 border-brand-gold">
-                    <h3 class="font-bold text-xl mb-6 text-brand-gold"><i class="fa-solid fa-calendar-week mr-2"></i> Weekly Returns Cashflow</h3>
-                    <p class="text-sm text-gray-400 mb-4">Your share of the weekly payments collected (Spitzer model) from active borrowers.</p>
-                    
-                    <div class="bg-gray-800 p-6 rounded-xl text-center border border-gray-700">
-                        <div class="text-gray-400 text-sm font-semibold mb-2">Estimated Next Weekly Payout</div>
-                        <div class="text-5xl font-black text-white" id="inv-weekly-payout">0</div>
-                        <div class="text-brand-gold font-bold mt-2">ZMW / Week</div>
-                    </div>
-                    
-                    <button class="w-full mt-6 bg-transparent border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold py-3 rounded-lg transition-all">Withdraw Funds</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Application Logic (JavaScript) -->
     <script>
-        // ==========================================
-        // 1. System Configuration & Mock DB
-        // ==========================================
-        const SYSTEM = {
-            interestWithCollateralAnnual: 0.7992, // 79.92% Annual (With Collateral)
-            interestWithoutCollateralMonthly: 0.12, // 12% Monthly (No Collateral)
-            loanToValueRatio: 0.40, // We give 40% of the collateral's value
-            currentUser: null
+        // Global State
+        const state = {
+            pendingLoans: [],
+            activeInvestorAssets: [],
+            documentsUploaded: false
         };
 
-        const DB = {
-            users: [
-                { username: 'ADMIN', password: 'ADMIN', role: 'admin' },
-                { 
-                    username: 'YOAV', 
-                    password: 'YOAVH', 
-                    role: 'investor', 
-                    name: 'Yoav Haner',
-                    initialCapitalILS: 108000,
-                    exchangeRate: 6.5, // 1 ILS = ~6.5 ZMW
-                    utilizationRate: 0.12, // 12% currently invested
-                    targetMonthlyReturnRate: 0.0333 // 3.33% target
-                }
-            ],
-            loans: [
-                { id: 'L-8392', client: 'John Banda', amount: 12000, months: 24, collateral: 'Toyota Corolla 2010', colValue: 30000, status: 'Pending', investorId: null, track: 'Regular' },
-                { id: 'L-1022', client: 'Mary Phiri', amount: 5000, months: 12, collateral: 'None', colValue: 0, status: 'Pending', investorId: null, track: 'Single Mother' }
-            ]
+        // DOM Elements
+        const DOM = {
+            amountInput: document.getElementById('calc-amount'),
+            amountSlider: document.getElementById('calc-amount-slider'),
+            trackSelect: document.getElementById('calc-track'),
+            govBox: document.getElementById('gov-code-box'),
+            govCode: document.getElementById('gov-emp-code'),
+            collateralToggle: document.getElementById('calc-collateral-toggle'),
+            monthsSlider: document.getElementById('calc-months'),
+            monthsDisplay: document.getElementById('calc-months-display'),
+            resMonthly: document.getElementById('res-monthly'),
+            resWeekly: document.getElementById('res-weekly'),
+            collateralInfo: document.getElementById('collateral-info'),
+            colReqVal: document.getElementById('collateral-required-val'),
+            graceNote: document.getElementById('grace-note'),
+            bannerTitle: document.getElementById('banner-title'),
+            bannerSubtitle: document.getElementById('banner-subtitle')
         };
 
-        // Custom Toast Function
-        function showToast(message, type = 'success') {
+        const marketingCopy = {
+            regular: { t: "Need funding?", s: "Loans starting from 500 ZMW, fast and secure." },
+            farmer: { t: "Grow Your Harvest", s: "Enjoy up to 3 Months Grace Period to let your crops grow." },
+            business: { t: "Empower Your Business", s: "Get 1 Month Grace Period to set up your new venture." },
+            mother: { t: "We Support You", s: "Special discounted rates exclusively for Single Mothers." },
+            gov: { t: "Official Govt Employee", s: "Direct salary deduction for ultimate convenience & approval." },
+            partner: { t: "VIP Partner Access", s: "Premium priority processing and favorable structures." }
+        };
+
+        function handleTrackChange() {
+            const track = DOM.trackSelect.value;
+            
+            // Show/Hide Gov Box
+            if (track === 'gov') {
+                DOM.govBox.classList.remove('hide');
+            } else {
+                DOM.govBox.classList.add('hide');
+                DOM.govCode.value = '';
+            }
+
+            // Show/Hide Grace Note
+            if (track === 'farmer' || track === 'business') {
+                DOM.graceNote.classList.remove('hide');
+            } else {
+                DOM.graceNote.classList.add('hide');
+            }
+
+            // Update Banner
+            DOM.bannerTitle.innerText = marketingCopy[track].t;
+            DOM.bannerSubtitle.innerText = marketingCopy[track].s;
+
+            calculateSpitzer();
+        }
+
+        function syncAmount(source) {
+            if (source === 'num') {
+                let val = parseFloat(DOM.amountInput.value);
+                if(val < 500) val = 500;
+                if(val > 50000) val = 50000;
+                DOM.amountSlider.value = val;
+            } else {
+                DOM.amountInput.value = DOM.amountSlider.value;
+            }
+            calculateSpitzer();
+        }
+
+        function calculateSpitzer() {
+            let p = parseFloat(DOM.amountInput.value) || 0;
+            let n = parseInt(DOM.monthsSlider.value) || 12;
+            let hasCollateral = DOM.collateralToggle.value === 'yes';
+            let track = DOM.trackSelect.value;
+
+            // Update UI trackers
+            DOM.monthsDisplay.innerText = n + " Months";
+            document.querySelectorAll('.amount-requested').forEach(el => el.innerText = p.toLocaleString());
+
+            // Collateral logic: Customer needs to provide 40% LTV (Meaning Asset Value = Loan / 0.40)
+            if (hasCollateral) {
+                DOM.collateralInfo.classList.remove('hide');
+                let requiredValue = p / 0.40;
+                DOM.colReqVal.innerText = requiredValue.toLocaleString();
+            } else {
+                DOM.collateralInfo.classList.add('hide');
+            }
+
+            // Interest Rates Calculation
+            let monthlyRate = 0;
+            if (hasCollateral) {
+                monthlyRate = 0.7992 / 12; // 79.92% Annual
+            } else {
+                monthlyRate = 0.12; // 12% Monthly
+            }
+
+            // Discounts
+            if (track === 'mother') {
+                monthlyRate = Math.max(0.01, monthlyRate - 0.01); // 1% discount
+            }
+
+            // Calculate PMT (Spitzer Formula)
+            let pmt = 0;
+            if (n > 0 && p > 0) {
+                pmt = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+            }
+
+            // Update Results
+            let monthlyNum = Math.round(pmt);
+            let weeklyNum = Math.round(pmt / 4.33); // approx weeks in month
+
+            DOM.resMonthly.innerText = monthlyNum.toLocaleString();
+            DOM.resWeekly.innerText = weeklyNum.toLocaleString();
+        }
+
+        function handleFileUpload(input) {
+            if (input.files.length > 0) {
+                state.documentsUploaded = true;
+                const fileCount = document.getElementById('file-count');
+                fileCount.classList.remove('hide');
+                fileCount.innerText = `${input.files.length} document(s) securely attached.`;
+            }
+        }
+
+        function submitLoanApplication() {
+            // Validation
+            if (!state.documentsUploaded) {
+                showToast('Error', 'Please upload required documents (ID/Payslip) first.', 'error');
+                return;
+            }
+
+            let track = DOM.trackSelect.value;
+            if (track === 'gov' && DOM.govCode.value.trim() === '') {
+                showToast('Error', 'Government Employee ID is required for this track.', 'error');
+                return;
+            }
+
+            // Create payload
+            const loanRequest = {
+                id: 'LN-' + Math.floor(Math.random() * 10000),
+                amount: parseFloat(DOM.amountInput.value),
+                months: parseInt(DOM.monthsSlider.value),
+                track: track,
+                hasCollateral: DOM.collateralToggle.value === 'yes',
+                pmt: parseInt(DOM.resMonthly.innerText.replace(/,/g, '')),
+                weekly: parseInt(DOM.resWeekly.innerText.replace(/,/g, '')),
+                date: new Date().toLocaleDateString()
+            };
+
+            state.pendingLoans.push(loanRequest);
+            renderAdminPanel();
+
+            showToast('Success', 'Application submitted successfully! Our team will review it.', 'success');
+            
+            // Reset state
+            state.documentsUploaded = false;
+            document.getElementById('file-count').classList.add('hide');
+            DOM.govCode.value = '';
+        }
+
+        // Toast System
+        function showToast(title, message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-circle-exclamation"></i>';
-            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toast.innerHTML = `<div><strong>${title}</strong><div class="text-sm mt-1 font-normal">${message}</div></div>`;
             
             container.appendChild(toast);
             
-            // Trigger reflow to ensure animation runs
+            // Trigger animation
             setTimeout(() => toast.classList.add('show'), 10);
             
+            // Remove after 4s
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
             }, 4000);
         }
 
-        // ==========================================
-        // 3. Frontend Logic (Spitzer Calculator & Banners)
-        // ==========================================
-        const calcElements = {
-            amount: document.getElementById('calc-amount'),
-            months: document.getElementById('calc-months'),
-            monthsDisplay: document.getElementById('calc-months-display'),
-            track: document.getElementById('calc-track'),
-            collateralToggle: document.getElementById('calc-collateral-toggle'),
-            collateral: document.getElementById('calc-collateral'),
-            collateralInfoBox: document.getElementById('collateral-info-box'),
-            monthlyPay: document.getElementById('res-monthly-pmt'),
-            weeklyPay: document.getElementById('res-weekly-pmt'),
-            graceNote: document.getElementById('grace-note'),
-            govCodeBox: document.getElementById('gov-code-box'),
-            govEmpCode: document.getElementById('gov-emp-code')
-        };
-
-        function handleTrackChange() {
-            const track = calcElements.track.value;
+        // View Router
+        function showView(viewId) {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            document.getElementById('investor-view').classList.add('hidden');
             
-            // Handle Grace period UI
-            if (track === 'farmer' || track === 'new_biz') {
-                calcElements.graceNote.classList.remove('hide');
-                calcElements.graceNote.innerHTML = `<i class="fa-solid fa-gift mr-1"></i> Grace period applied (${track === 'farmer' ? '3 Months' : '1 Month'})`;
-            } else {
-                calcElements.graceNote.classList.add('hide');
-            }
-
-            // Handle Government Employee Box
-            if (track === 'gov_employee') {
-                calcElements.govCodeBox.classList.remove('hide');
-            } else {
-                calcElements.govCodeBox.classList.add('hide');
-            }
-            
-            changeBannerByCategory(track);
-            calculateSpitzer();
+            document.getElementById(viewId).classList.remove('hidden');
+            window.scrollTo(0,0);
         }
 
-        function calculateSpitzer() {
-            let p = parseFloat(calcElements.amount.value) || 0;
-            let n = parseInt(calcElements.months.value);
-            const hasCollateral = calcElements.collateralToggle.value === 'yes';
-            const track = calcElements.track.value;
-
-            calcElements.monthsDisplay.innerText = n + " Months";
-
-            // Interest Rate Selection
-            let monthlyInterestRate;
-            if (hasCollateral) {
-                monthlyInterestRate = Math.pow(1 + SYSTEM.interestWithCollateralAnnual, 1/12) - 1; 
+        function toggleLoginModal() {
+            const modal = document.getElementById('login-modal');
+            const box = document.getElementById('login-box');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => box.classList.remove('scale-95'), 10);
             } else {
-                monthlyInterestRate = SYSTEM.interestWithoutCollateralMonthly;
-            }
-
-            // Single Mother Discount (1% absolute reduction in monthly rate if possible)
-            if (track === 'single_mom') {
-                monthlyInterestRate = Math.max(0.01, monthlyInterestRate - 0.01);
-            }
-
-            // Spitzer Formula: PMT = P * r * (1+r)^n / ((1+r)^n - 1)
-            let monthlyPmt = 0;
-            if (r > 0 && n > 0 && p > 0) {
-                let r = monthlyInterestRate;
-                monthlyPmt = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-            }
-            
-            let weeklyPmt = monthlyPmt / 4.33;
-
-            calcElements.monthlyPay.innerText = Math.round(monthlyPmt).toLocaleString();
-            calcElements.weeklyPay.innerText = Math.round(weeklyPmt).toLocaleString();
-
-            // Collateral UI Logic (Funding is 40% of value -> Required Value = Loan / 0.4)
-            if (hasCollateral) {
-                calcElements.collateralInfoBox.classList.remove('hide');
-                calcElements.collateral.innerText = Math.round(p / SYSTEM.loanToValueRatio).toLocaleString();
-                document.getElementById('upload-collateral-box').classList.remove('hide');
-            } else {
-                calcElements.collateralInfoBox.classList.add('hide');
-                document.getElementById('upload-collateral-box').classList.add('hide');
+                box.classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
             }
         }
 
-        function submitLoanRequest() {
-            // Validation for Gov Employee
-            if (calcElements.track.value === 'gov_employee') {
-                const code = calcElements.govEmpCode.value.trim();
-                if (!code || code.length < 5) {
-                    showToast('Error: Please enter a valid government employee code for payroll deduction.', 'error');
-                    return; 
-                }
+        function processLogin() {
+            const user = document.getElementById('login-user').value.toUpperCase();
+            const pass = document.getElementById('login-pass').value;
+
+            if (user === 'ADMIN' && pass === 'ADMIN') {
+                toggleLoginModal();
+                showView('admin-view');
+                showToast('Welcome', 'Admin logged in securely.', 'success');
+                renderAdminPanel();
+            } else if (user === 'YOAV' && pass === 'YOAVH') {
+                toggleLoginModal();
+                showView('investor-view');
+                showToast('Welcome', 'Investor Profile loaded.', 'info');
+                renderInvestorPanel();
+            } else {
+                showToast('Access Denied', 'Invalid credentials.', 'error');
             }
             
-            // Document Validation
-            const idFile = document.getElementById('upload-id').files.length;
-            if (idFile === 0) {
-                showToast('ID or Passport is required to proceed.', 'error');
-                return;
-            }
-            
-            const hasCollateral = calcElements.collateralToggle.value === 'yes';
-            if (hasCollateral && document.getElementById('upload-collateral').files.length === 0) {
-                showToast('You selected a collateral track. Proof of ownership is required.', 'error');
+            // Clear inputs
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+        }
+
+        function logout() {
+            showView('home-view');
+            showToast('Logged Out', 'Successfully signed out.', 'info');
+        }
+
+        // Admin Panel Rendering
+        function renderAdminPanel() {
+            const list = document.getElementById('admin-loan-list');
+            document.getElementById('admin-pending-count').innerText = state.pendingLoans.length;
+
+            if (state.pendingLoans.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-400 py-10 font-medium">No pending requests right now.</div>';
                 return;
             }
 
-            showToast('Application and documents submitted successfully!', 'success');
-            
-            // Create New Loan in Admin System
-            const newLoan = {
-                id: 'L-' + Math.floor(Math.random() * 9000 + 1000),
-                client: 'Web Client (Zambia)',
-                amount: parseFloat(calcElements.amount.value),
-                months: parseInt(calcElements.months.value),
-                collateral: hasCollateral ? 'Documents Uploaded' : 'None',
-                colValue: hasCollateral ? Math.round(parseFloat(calcElements.amount.value) / SYSTEM.loanToValueRatio) : 0,
-                status: 'Pending',
-                investorId: null,
-                track: document.querySelector('#calc-track option:checked').text
-            };
-            DB.loans.unshift(newLoan);
-            
-            // Reset files
-            document.getElementById('upload-id').value = '';
-            document.getElementById('upload-income').value = '';
-            document.getElementById('upload-collateral').value = '';
-        }
+            list.innerHTML = '';
+            state.pendingLoans.forEach((loan, index) => {
+                let collateralText = loan.hasCollateral ? 
+                    `<span class="text-green-600">Yes (Req Val: ${(loan.amount / 0.4).toLocaleString()} ZMW)</span>` : 
+                    `<span class="text-red-500">No (12% M Rate)</span>`;
 
-        // Banners AI based on Category
-        const bannersData = {
-            regular: [
-                { title: "Need to close the month?", sub: "Loans from 500 ZMW in a fast and secure process." },
-                { title: "Up to 50,000 ZMW", sub: "Flexible terms up to 60 payments. We are with you." }
-            ],
-            farmer: [
-                { title: "Farmer? 3 Months Grace!", sub: "We know the season is tough. Start paying after harvest." },
-                { title: "Farm Equipment Financing", sub: "Pledge your tractor/land and get massive discounts." }
-            ],
-            new_biz: [
-                { title: "Building a New Business?", sub: "Take 1 month of grace to organize your cashflow." },
-                { title: "Fuel for Entrepreneurs", sub: "Use your assets as collateral and get 79.92% annual rate!" }
-            ],
-            single_mom: [
-                { title: "Special Rates for Mothers", sub: "Orizis Capital supports single mothers with discounted interest." },
-                { title: "Fast, Safe, Dignified", sub: "Get the cash you need today with terms you can manage." }
-            ],
-            partner: [
-                { title: "VIP Partner Access", sub: "Exclusive rates and priority processing." }
-            ],
-            gov_employee: [
-                { title: "Government Employee?", sub: "Seamless approval via direct payroll deduction." },
-                { title: "No Hassle, Zero Risk", sub: "Link your employee code and get approved instantly." }
-            ]
-        };
-
-        let currentCategory = 'regular';
-        let bannerIdx = 0;
-        let bannerTimer;
-
-        function changeBannerByCategory(cat) {
-            currentCategory = cat;
-            bannerIdx = 0;
-            updateBannerUI();
-        }
-
-        function updateBannerUI() {
-            const data = bannersData[currentCategory];
-            const titleEl = document.getElementById('banner-title');
-            const subEl = document.getElementById('banner-subtitle');
-            
-            titleEl.style.opacity = 0;
-            subEl.style.opacity = 0;
-            
-            setTimeout(() => {
-                titleEl.innerText = data[bannerIdx].title;
-                subEl.innerText = data[bannerIdx].sub;
-                titleEl.style.opacity = 1;
-                subEl.style.opacity = 1;
-                bannerIdx = (bannerIdx + 1) % data.length;
-            }, 500);
-        }
-
-        bannerTimer = setInterval(() => updateBannerUI(), 5000);
-
-        // ==========================================
-        // 4. Admin & Investor Logic
-        // ==========================================
-        
-        function handleLogin() {
-            const user = document.getElementById('login-user').value.toUpperCase().trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            
-            const foundUser = DB.users.find(u => u.username === user && u.password === pass);
-            if(foundUser) {
-                SYSTEM.currentUser = foundUser;
-                document.getElementById('login-modal').classList.add('hidden');
-                document.getElementById('login-user').value = '';
-                document.getElementById('login-pass').value = '';
-                
-                if(foundUser.role === 'admin') {
-                    renderAdminDashboard();
-                    document.getElementById('admin-dashboard').classList.remove('hidden');
-                } else if(foundUser.role === 'investor') {
-                    renderInvestorDashboard();
-                    document.getElementById('investor-dashboard').classList.remove('hidden');
-                }
-            } else {
-                showToast('Error: Incorrect username or password', 'error');
-            }
-        }
-
-        function logoutAdmin() {
-            SYSTEM.currentUser = null;
-            document.getElementById('admin-dashboard').classList.add('hidden');
-            document.getElementById('investor-dashboard').classList.add('hidden');
-        }
-
-        function renderAdminDashboard() {
-            const tbody = document.getElementById('admin-loans-table');
-            tbody.innerHTML = '';
-            
-            let totalReqs = 0;
-            let totalVol = 0;
-
-            DB.loans.forEach(loan => {
-                if(loan.status === 'Pending') totalReqs++;
-                if(loan.status === 'Active') totalVol += loan.amount;
-
-                const statusColor = loan.status === 'Pending' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' : 'bg-green-100 text-green-800 border-green-300';
-                const actionBtn = loan.status === 'Pending' 
-                    ? `<button onclick="approveLoanFromAdmin('${loan.id}')" class="bg-brand-dark text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-brand-gold hover:text-brand-dark transition-all shadow-md">Approve Loan <i class="fa-solid fa-check ml-1"></i></button>`
-                    : `<span class="text-xs text-gray-500 font-bold bg-gray-100 px-3 py-1 rounded-full border border-gray-200">Active / Funded</span>`;
-
-                const docsIcons = `
-                    <div class="flex justify-center gap-2">
-                        <button class="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-full transition" title="View ID"><i class="fa-solid fa-id-card"></i></button>
-                        ${loan.collateral !== 'None' ? `<button class="text-yellow-600 hover:text-yellow-800 bg-yellow-50 p-2 rounded-full transition" title="View Collateral"><i class="fa-solid fa-images"></i></button>` : ''}
+                let row = document.createElement('div');
+                row.className = 'border border-gray-200 rounded-lg p-4 flex flex-col md:flex-row justify-between items-center bg-white hover:shadow-md transition';
+                row.innerHTML = `
+                    <div class="mb-4 md:mb-0 w-full md:w-3/4">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="bg-gray-800 text-brand-gold text-xs font-bold px-2 py-1 rounded">REQ: ${loan.id}</span>
+                            <span class="text-sm font-bold text-gray-500 capitalize">Track: ${loan.track}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div><strong>Amount:</strong> ${loan.amount.toLocaleString()} ZMW</div>
+                            <div><strong>Term:</strong> ${loan.months} Months</div>
+                            <div><strong>Collateral:</strong> ${collateralText}</div>
+                            <div><strong>Expected Yield:</strong> ${loan.weekly.toLocaleString()} ZMW/week</div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/4 flex justify-end">
+                        <button onclick="approveLoan(${index})" class="w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition">
+                            Approve & Assign
+                        </button>
                     </div>
                 `;
+                list.appendChild(row);
+            });
+        }
 
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 transition-colors";
-                tr.innerHTML = `
-                    <td class="p-4 font-bold text-gray-800">${loan.id}</td>
-                    <td class="p-4 font-medium text-gray-700">${loan.client}</td>
-                    <td class="p-4">
-                        <span class="font-black text-brand-dark text-lg">${loan.amount.toLocaleString()} ZMW</span><br>
-                        <span class="text-xs text-gray-500 font-bold">${loan.months} Months</span>
-                    </td>
-                    <td class="p-4"><span class="bg-gray-100 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">${loan.track}</span></td>
-                    <td class="p-4 text-sm">
-                        ${loan.collateral !== 'None' ? `<span class="text-brand-dark font-black">${loan.colValue.toLocaleString()} ZMW</span><br><span class="text-xs text-gray-500">${loan.collateral}</span>` : '<span class="text-gray-400 font-medium">No Collateral</span>'}
-                    </td>
-                    <td class="p-4">${docsIcons}</td>
-                    <td class="p-4 text-center"><span class="${statusColor} border px-3 py-1 rounded-full text-xs font-black shadow-sm">${loan.status}</span></td>
-                    <td class="p-4 text-center">${actionBtn}</td>
+        function approveLoan(index) {
+            // Move from pending to investor active assets
+            const approvedLoan = state.pendingLoans.splice(index, 1)[0];
+            state.activeInvestorAssets.push(approvedLoan);
+            
+            showToast('Approved', `Loan ${approvedLoan.id} approved and assigned to YOAV.`, 'success');
+            renderAdminPanel();
+        }
+
+        // Investor Panel Rendering
+        function renderInvestorPanel() {
+            const list = document.getElementById('investor-asset-list');
+            
+            if (state.activeInvestorAssets.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-400 py-10 font-medium">Waiting for new loans to be approved and assigned...</div>';
+                document.getElementById('investor-weekly-total').innerText = '0';
+                return;
+            }
+
+            list.innerHTML = '';
+            let totalWeeklyYield = 0;
+
+            state.activeInvestorAssets.forEach(asset => {
+                totalWeeklyYield += asset.weekly;
+                let row = document.createElement('div');
+                row.className = 'border-l-4 border-brand-gold bg-white p-4 rounded shadow-sm flex justify-between items-center';
+                row.innerHTML = `
+                    <div>
+                        <div class="text-sm font-bold text-gray-800">${asset.id} | ${asset.amount.toLocaleString()} ZMW Principal</div>
+                        <div class="text-xs text-gray-500">Term: ${asset.months} Months | Active</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-lg font-black text-green-600">+${asset.weekly.toLocaleString()} ZMW</div>
+                        <div class="text-xs text-gray-400">per week</div>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                list.appendChild(row);
             });
 
-            document.getElementById('admin-total-reqs').innerText = totalReqs;
-            document.getElementById('admin-total-vol').innerText = totalVol.toLocaleString();
+            document.getElementById('investor-weekly-total').innerText = totalWeeklyYield.toLocaleString();
         }
 
-        function approveLoanFromAdmin(loanId) {
-            const loan = DB.loans.find(l => l.id === loanId);
-            if(loan) {
-                loan.status = 'Active';
-                loan.investorId = 'YOAV'; // Auto-assign to Yoav for demonstration
-                renderAdminDashboard();
-                showToast(`Loan ${loanId} approved! Funds allocated from Investor Pool.`, 'success');
-            }
-        }
-
-        // ==========================================
-        // 5. Investor Panel Logic (Yoav Haner)
-        // ==========================================
-        function renderInvestorDashboard() {
-            const user = SYSTEM.currentUser;
-            
-            // Financial Calculations
-            const totalZMW = user.initialCapitalILS * user.exchangeRate; // ~702,000 ZMW
-            const utilizedZMW = totalZMW * user.utilizationRate;
-            const availableZMW = totalZMW - utilizedZMW;
-            const expectedProfit = utilizedZMW * user.targetMonthlyReturnRate;
-
-            document.getElementById('inv-total').innerText = Math.round(totalZMW).toLocaleString();
-            document.getElementById('inv-avail').innerText = Math.round(availableZMW).toLocaleString();
-            document.getElementById('inv-used').innerText = Math.round(utilizedZMW).toLocaleString();
-            document.getElementById('inv-profit').innerText = Math.round(expectedProfit).toLocaleString();
-
-            // Render Active Loans assigned to this investor
-            const tbody = document.getElementById('investor-loans-table');
-            tbody.innerHTML = '';
-            
-            let weeklyReturnsTotal = 0;
-
-            const myLoans = DB.loans.filter(l => l.investorId === user.username && l.status === 'Active');
-            
-            if(myLoans.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-gray-500">No active loans currently allocated. Await Admin approval.</td></tr>`;
-            } else {
-                myLoans.forEach(loan => {
-                    // Calculate basic spitzer for weekly return display
-                    let r = 0.12; // Base assumed monthly for display
-                    if(loan.collateral !== 'None') r = Math.pow(1 + SYSTEM.interestWithCollateralAnnual, 1/12) - 1;
-                    
-                    let monthly = (loan.amount * r * Math.pow(1+r, loan.months)) / (Math.pow(1+r, loan.months) - 1);
-                    let weekly = monthly / 4.33;
-                    weeklyReturnsTotal += weekly;
-
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-gray-50";
-                    tr.innerHTML = `
-                        <td class="p-4 font-bold text-brand-dark">${loan.id}</td>
-                        <td class="p-4 font-bold text-gray-700">${loan.amount.toLocaleString()} ZMW</td>
-                        <td class="p-4"><span class="bg-green-100 text-green-800 border border-green-300 px-3 py-1 rounded-full text-xs font-bold">Active / Yielding</span></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            document.getElementById('inv-weekly-payout').innerText = Math.round(weeklyReturnsTotal).toLocaleString();
-        }
-
-        // Initialize Application
-        calculateSpitzer();
-        updateBannerUI();
+        // Initialize App
+        window.onload = function() {
+            calculateSpitzer();
+        };
     </script>
 </body>
 </html>
