@@ -1,0 +1,113 @@
+<!-- ... existing code ... -->
+                        <div class="flex justify-between text-xs text-gray-400 mt-2 font-medium">
+                            <span>1 M</span>
+                            <span>120 M</span>
+                        </div>
+                    </div>
+
+                    <!-- Collateral Check -->
+                    <div class="mb-6 bg-yellow-50 p-4 rounded-xl border-2 border-secondary relative overflow-hidden transition-all shadow-sm hover:shadow-md">
+                        <div class="absolute top-0 right-0 bg-secondary text-primary text-xs font-bold px-2 py-1 rounded-bl-lg z-10">
+                            RECOMMENDED
+                        </div>
+                        <label class="flex items-start cursor-pointer relative z-20">
+                            <div class="flex-shrink-0 mt-1">
+                                <input type="checkbox" id="has-collateral" class="w-5 h-5 text-secondary rounded border-gray-300 focus:ring-secondary">
+                            </div>
+                            <div class="ml-3">
+                                <span class="block text-sm font-bold text-primary">Pledge Collateral (Asset/Vehicle)</span>
+                                <span class="block text-xs text-gray-700 mt-1">Get a massively discounted rate! By pledging collateral, you can borrow an amount equal to <strong>40% of your asset's total value</strong>.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Result Box -->
+                    <div class="bg-primary p-6 rounded-2xl text-center text-white mb-6 relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 opacity-10 text-6xl"><i class="fas fa-coins"></i></div>
+                        <p class="text-sm text-gray-300 mb-1">Estimated Monthly Payment</p>
+                        <div class="text-4xl font-bold text-secondary tracking-tight mb-2">
+                            <span id="monthly-payment">0</span> <span class="text-lg">ZMW</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+<!-- ... existing code ... -->
+                    <div class="w-20 h-20 mx-auto bg-yellow-50 text-secondary rounded-full flex items-center justify-center text-3xl mb-6">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-3">Asset Backed Logic</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">Pledge a vehicle, property, or appliances. We fund up to 40% of the asset's value and significantly lower your rate.</p>
+                </div>
+                <!-- Feature 3 -->
+<!-- ... existing code ... -->
+                            <div class="mb-8" id="collateral-details-section" style="display: none;">
+                                <label class="block text-xs font-semibold text-gray-500 mb-2">Describe Collateral Asset</label>
+                                <textarea class="input-field w-full pb-2 bg-transparent text-gray-800 resize-none" rows="2" placeholder="e.g. 2015 Toyota Corolla (Value: 100,000 ZMW)"></textarea>
+                                <p class="text-xs text-secondary mt-1"><i class="fas fa-info-circle"></i> Note: To get the requested loan amount, your pledged asset must be worth at least <strong><span id="required-asset-value">0</span> ZMW</strong> (Loan is 40% of value).</p>
+                            </div>
+
+                            <!-- Terms and Conditions -->
+                            <div class="mb-6">
+                                <label class="block text-xs font-semibold text-gray-500 mb-2">Terms and Conditions</label>
+                                <div class="bg-white border border-gray-200 rounded-lg p-3 h-32 overflow-y-scroll text-xs text-gray-600 mb-3 text-left shadow-inner">
+                                    <p class="font-bold mb-1 text-primary">Orizis Capital Loan Agreement</p>
+                                    <p class="mb-2">By submitting this application, the borrower agrees to the following legally binding terms:</p>
+                                    <ul class="list-disc pl-4 space-y-2 mb-2">
+                                        <li>The borrower confirms that all provided personal and asset information is accurate and truthful.</li>
+                                        <li>Interest is applied monthly on the outstanding balance as per the selected loan structure.</li>
+                                        <li><strong class="text-red-600">Default & Confiscation Policy:</strong> In the event that the borrower fails to make two (2) consecutive monthly installment payments, Orizis Capital reserves the absolute right to seize, liquidate, and fully confiscate any pledged collateral.</li>
+                                        <li>The borrower acknowledges and explicitly agrees that the collateral will be forfeited in its entirety, even if its current market value equals 100% of the asset's original value and significantly exceeds the outstanding loan balance. This forfeiture covers penalty fees, collection operations, and the defaulted amount in full.</li>
+                                    </ul>
+                                    <p>Orizis Capital retains the right to approve or deny applications based on internal valuations and credit checks.</p>
+                                </div>
+                                <label class="flex items-start cursor-pointer">
+                                    <div class="flex-shrink-0 mt-0.5">
+                                        <input type="checkbox" required class="w-5 h-5 text-secondary rounded border-gray-300 focus:ring-secondary">
+                                    </div>
+                                    <div class="ml-3">
+                                        <span class="block text-xs font-bold text-gray-800">I have read, understood, and agree to the Terms and Conditions and the legally binding confiscation policy.</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="w-full bg-primary hover:bg-blue-900 text-white font-bold py-4 rounded-xl transition duration-300 shadow-md">
+<!-- ... existing code ... -->
+                // Update displays
+                amountDisplay.textContent = formatCurrency(amount);
+                monthsDisplay.textContent = months;
+                formAmountDisplay.textContent = formatCurrency(amount);
+                formMonthsDisplay.textContent = months;
+
+                // --- FINANCIAL MODEL ---
+                // Regular rate: 14% monthly. 
+                // Collateral rate: 8.3% monthly.
+                
+                const monthlyRate = collateralCheck.checked ? 0.083 : 0.14; 
+                const n = months;
+                const p = amount;
+
+                let pmt = 0;
+                
+                // Fixed formula to prevent JS overflow with high rates over long periods
+                if (monthlyRate > 0) {
+                     // Using a standard flat-rate amortization equivalent for extreme microfinance
+                     // Calculate total interest over the period, add to principal, divide by months
+                     // This ensures smooth sliding without mathematical breakdown
+                     const totalInterest = p * monthlyRate * n;
+                     pmt = (p + totalInterest) / n;
+                } else {
+                    pmt = p / n;
+                }
+
+                // Update the Required Asset Value (if collateral is checked)
+                // If loan = 40% of asset, then asset = loan / 0.4
+                const requiredAssetValue = p / 0.4;
+                document.getElementById('required-asset-value').textContent = formatCurrency(requiredAssetValue);
+
+
+                // Display the calculated monthly payment
+                monthlyPaymentDisplay.textContent = formatCurrency(pmt);
+            }
+
+            // Listeners for Calculator
+<!-- ... existing code ... -->
