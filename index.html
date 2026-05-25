@@ -832,37 +832,43 @@
             renderAdminPanel();
         }
 
-        function renderInvestorPanel() {
-            const list = document.getElementById('investor-asset-list');
-            
-            if (state.activeInvestorAssets.length === 0) {
-                list.innerHTML = '<div class="text-center text-gray-400 py-10 font-medium">Waiting for new loans to be approved and assigned...</div>';
-                document.getElementById('investor-weekly-total').innerText = '0';
-                return;
-            }
+       function renderInvestorPanel() {
+    const list = document.getElementById('investor-asset-list');
+    const totalCapital = 756000; // סך ההון הקיים
+    
+    if (state.activeInvestorAssets.length === 0) {
+        list.innerHTML = '<div class="text-center text-gray-400 py-10 font-medium">Waiting for new loans...</div>';
+        return;
+    }
 
-            list.innerHTML = '';
-            let totalWeeklyYield = 0;
+    list.innerHTML = '';
+    let totalWeeklyYield = 0;
+    let totalDeployed = 0;
 
-            state.activeInvestorAssets.forEach(asset => {
-                totalWeeklyYield += asset.weekly;
-                let row = document.createElement('div');
-                row.className = 'border-l-4 border-brand-gold bg-white p-4 rounded shadow-sm flex justify-between items-center';
-                row.innerHTML = `
-                    <div>
-                        <div class="text-sm font-bold text-gray-800">${asset.id} | ${asset.amount.toLocaleString()} ZMW Principal</div>
-                        <div class="text-xs text-gray-500">Term: ${asset.months} Months | Active</div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-lg font-black text-green-600">+${asset.weekly.toLocaleString()} ZMW</div>
-                        <div class="text-xs text-gray-400">per week</div>
-                    </div>
-                `;
-                list.appendChild(row);
-            });
+    state.activeInvestorAssets.forEach(asset => {
+        totalWeeklyYield += asset.weekly;
+        totalDeployed += asset.amount;
 
-            document.getElementById('investor-weekly-total').innerText = totalWeeklyYield.toLocaleString();
-        }
+        let row = document.createElement('div');
+        row.className = 'border-l-4 border-brand-gold bg-white p-4 rounded shadow-sm flex justify-between items-center';
+        row.innerHTML = `
+            <div>
+                <div class="text-sm font-bold text-gray-800">${asset.id} | ${asset.amount.toLocaleString()} ZMW</div>
+                <div class="text-xs text-gray-500">Weekly: ${asset.weekly.toLocaleString()} ZMW</div>
+            </div>
+        `;
+        list.appendChild(row);
+    });
+
+    // חישוב דינמי
+    const activePct = Math.min((totalDeployed / totalCapital) * 100, 100);
+    
+    // עדכון ה-UI
+    document.getElementById('investor-active-pct').innerText = `${Math.round(activePct)}%`;
+    document.getElementById('investor-progress-bar').style.width = `${activePct}%`;
+    document.getElementById('investor-weekly-total').innerText = totalWeeklyYield.toLocaleString();
+    document.getElementById('investor-weekly-total-display').innerText = `${totalWeeklyYield.toLocaleString()} ZMW`;
+}
 
         // Initialize App
         window.onload = function() {
