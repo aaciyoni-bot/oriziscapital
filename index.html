@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
@@ -301,7 +302,8 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1">Global Available Balance (ZMW)</label>
-                                    <input type="number" id="admin-global-balance" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none">
+                                    <input type="number" id="admin-global-balance" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" disabled>
+                                    <div class="text-xs text-gray-400 font-medium mt-1">Calculated automatically based on Company Capital & Investments.</div>
                                 </div>
                             </div>
                         </div>
@@ -316,7 +318,7 @@
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1">YOAV Active Percentage (%)</label>
                                     <input type="number" id="admin-yoav-pct" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none">
-                                    <div class="text-xs text-gray-400 font-medium mt-1">Calculates active ZMW automatically based on %.</div>
+                                    <div class="text-xs text-gray-400 font-medium mt-1">Updates company's available loan pool automatically.</div>
                                 </div>
                             </div>
                         </div>
@@ -437,12 +439,11 @@
             track: 'personal',
             hasCollateral: false,
             partners: 1,
-            // DEFAULT GLOBAL DATA
+            // BASE INITIAL DATA (Updated via code calculations and localStorage)
             global: {
                 total: 6336000,
                 balance: 892000
             },
-            // DEFAULT INVESTOR DATA (YOAV)
             investor: {
                 total: 777600,
                 activePct: 26
@@ -451,29 +452,53 @@
 
         function loadInvestorData() {
             try {
-                const savedData = localStorage.getItem('orizis_cap_data_v2');
+                const savedData = localStorage.getItem('orizis_cap_data_v3');
                 if(savedData) {
                     const parsed = JSON.parse(savedData);
                     if(parsed.global) state.global = parsed.global;
                     if(parsed.investor) state.investor = parsed.investor;
                 }
             } catch (e) {
-                console.error("Local storage error:", e);
+                console.error("Local storage read error:", e);
             }
         }
 
         function saveInvestorData() {
-            state.global.total = parseFloat(document.getElementById('admin-global-total').value) || 0;
-            state.global.balance = parseFloat(document.getElementById('admin-global-balance').value) || 0;
-            state.investor.total = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
-            state.investor.activePct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
+            // 1. Compute previous deployment value before reading inputs
+            let oldActiveVal = (state.investor.total * state.investor.activePct) / 100;
+
+            // 2. Read current values from the Admin panel inputs
+            let newGlobalTotal = parseFloat(document.getElementById('admin-global-total').value) || 0;
+            let newYoavTotal = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
+            let newYoavPct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
+
+            // 3. Compute new deployment value
+            let newActiveVal = (newYoavTotal * newYoavPct) / 100;
+
+            // 4. Calculate system variances (Diffs)
+            let globalTotalDiff = newGlobalTotal - state.global.total; // Capital added by new investors
+            let yoavActiveDiff = newActiveVal - oldActiveVal;          // Capital deployed by Yoav into loans
+
+            // 5. Autocalculate the dynamic global available balance for loans
+            let adjustedBalance = state.global.balance + globalTotalDiff - yoavActiveDiff;
+            if (adjustedBalance < 0) adjustedBalance = 0; 
+
+            // 6. Push updates safely into system state
+            state.global.total = newGlobalTotal;
+            state.global.balance = adjustedBalance;
+            state.investor.total = newYoavTotal;
+            state.investor.activePct = newYoavPct;
             
+            // 7. Synchronize data state in local storage
             localStorage.setItem('orizis_cap_data_v2', JSON.stringify({
                 global: state.global,
                 investor: state.investor
             }));
             
-            showToast('Success', 'Global and Investor portfolio updated. Calculations applied.', 'success');
+            // 8. Update view states immediately
+            document.getElementById('admin-global-balance').value = state.global.balance;
+            
+            showToast('Success', 'Global company variables calculated and applied.', 'success');
             renderInvestorPanel(); 
         }
 
