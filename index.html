@@ -343,3 +343,552 @@
                     <div class="p-6">
                         <div id="admin-loan-list" class="space-y-4">
                             <div class="text-center text-gray-400 py-10 font-medium">No pending requests right now.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="investor-view" class="w-full hide pb-20 px-4 md:px-10 pt-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-2 border-gray-200 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-brand-dark">Investor Portfolio</h2>
+                        <p class="text-brand-gold font-bold text-xl">Welcome back, YOAV HANER</p>
+                    </div>
+                    <button onclick="logout()" class="mt-4 md:mt-0 text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded">Logout</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    
+                    <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-brand-dark text-white p-6 rounded-xl shadow-md">
+                            <div class="text-sm opacity-80 font-bold uppercase tracking-wider text-brand-gold">My Total Capital</div>
+                            <div class="text-3xl font-black mt-2" id="inv-yoav-total">0 ZMW</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
+                            <div class="text-sm text-gray-500 font-bold uppercase tracking-wider">My Active Investment</div>
+                            <div class="flex items-baseline mt-2">
+                                <div class="text-3xl font-black text-blue-600" id="inv-yoav-active-val">0 ZMW</div>
+                                <div class="text-sm font-bold text-gray-400 ml-2" id="inv-yoav-active-pct">(0%)</div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-1000" id="inv-yoav-active-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-1 flex flex-col gap-4">
+                        <div class="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-inner">
+                            <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Orizis Global Capital</div>
+                            <div class="text-2xl font-black text-gray-800 mt-1" id="inv-global-total">0 ZMW</div>
+                        </div>
+                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 shadow-inner">
+                            <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Global Available For Loans</div>
+                            <div class="text-2xl font-black text-green-700 mt-1" id="inv-global-balance">0 ZMW</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Your Active Yield Generating Assets</h3>
+                        <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
+                            Target Yield: 3.33% / mo
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="investor-asset-list" class="space-y-3">
+                            <div class="text-center text-gray-400 py-10 font-medium">Waiting for new loans to be approved and assigned...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hide items-center justify-center flex">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative transform scale-95 transition-transform duration-300" id="login-box">
+            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-2xl font-black text-brand-dark mb-2">Portal Login</h3>
+            <p class="text-sm text-gray-500 mb-6">Access Admin or Investor dashboard.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Username</label>
+                    <input type="text" id="login-user" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
+                    <input type="password" id="login-pass" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none">
+                </div>
+                <button onclick="processLogin()" class="w-full bg-brand-dark text-brand-gold font-bold py-3 rounded-lg hover:bg-gray-800 transition">Authenticate</button>
+            </div>
+            
+            <div class="mt-4 text-xs text-gray-400 text-center">
+                Hint: YOAV/YOAVH for investor, ADMIN/ADMIN for admin.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // FIREBASE CLOUD SETUP
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCEC5xVKq58pgxY8aAnl3L7LPW8N-06tok",
+            authDomain: "netabel-7c1c9.firebaseapp.com",
+            projectId: "netabel-7c1c9",
+            storageBucket: "netabel-7c1c9.firebasestorage.app",
+            messagingSenderId: "827558848571",
+            appId: "1:827558848571:web:d2a7021eacc98615d1541e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Global Application State
+        const state = {
+            pendingLoans: [],
+            activeInvestorAssets: [],
+            documentsUploaded: false,
+            track: 'personal',
+            hasCollateral: false,
+            partners: 1,
+            global: { total: 6336000, balance: 892000 },
+            investor: { total: 777600, activePct: 26 }
+        };
+
+        // Real-Time Cloud Listener (Syncs across devices)
+        function initFirebaseSync() {
+            db.collection('orizis_data').doc('system_state').onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    state.global = data.global || state.global;
+                    state.investor = data.investor || state.investor;
+                    state.pendingLoans = data.pendingLoans || [];
+                    state.activeInvestorAssets = data.activeInvestorAssets || [];
+                    
+                    updateAdminInputs();
+                    renderAdminPanel();
+                    renderInvestorPanel();
+                } else {
+                    // First time initialization in the database
+                    saveStateToCloud(false);
+                }
+            });
+        }
+
+        // Push State to Cloud
+        function saveStateToCloud(showNotif = false) {
+            db.collection('orizis_data').doc('system_state').set({
+                global: state.global,
+                investor: state.investor,
+                pendingLoans: state.pendingLoans,
+                activeInvestorAssets: state.activeInvestorAssets
+            }).then(() => {
+                if(showNotif) showToast('Success', 'Data synced to global cloud successfully.', 'success');
+            }).catch((error) => {
+                console.error("Cloud sync error: ", error);
+                showToast('Error', 'Failed to connect to cloud. Check Firestore rules.', 'error');
+            });
+        }
+
+        // Triggered by Admin "Save" Button
+        function saveInvestorData() {
+            let oldActiveVal = (state.investor.total * state.investor.activePct) / 100;
+
+            let newGlobalTotal = parseFloat(document.getElementById('admin-global-total').value) || 0;
+            let newYoavTotal = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
+            let newYoavPct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
+
+            let newActiveVal = (newYoavTotal * newYoavPct) / 100;
+
+            let globalTotalDiff = newGlobalTotal - state.global.total; 
+            let yoavActiveDiff = newActiveVal - oldActiveVal;          
+
+            let adjustedBalance = state.global.balance + globalTotalDiff - yoavActiveDiff;
+            if (adjustedBalance < 0) adjustedBalance = 0; 
+
+            state.global.total = newGlobalTotal;
+            state.global.balance = adjustedBalance;
+            state.investor.total = newYoavTotal;
+            state.investor.activePct = newYoavPct;
+            
+            // Push calculated changes to Cloud
+            saveStateToCloud(true);
+        }
+
+        // ==========================================
+        // UI & CALCULATOR LOGIC
+        // ==========================================
+        
+        const DOM = {
+            amountInput: document.getElementById('calc-amount'),
+            amountSlider: document.getElementById('calc-amount-slider'),
+            govBox: document.getElementById('gov-code-box'),
+            govCode: document.getElementById('gov-emp-code'),
+            monthsSlider: document.getElementById('calc-months'),
+            monthsDisplay: document.getElementById('calc-months-display'),
+            resMonthly: document.getElementById('res-monthly'),
+            resWeekly: document.getElementById('res-weekly'),
+            collateralInfo: document.getElementById('collateral-info'),
+            colReqVal: document.getElementById('collateral-required-val'),
+            graceNote: document.getElementById('grace-note'),
+            bannerTitle: document.getElementById('banner-title'),
+            bannerSubtitle: document.getElementById('banner-subtitle'),
+            chilimbaSection: document.getElementById('chilimba-section'),
+            partnerList: document.getElementById('partner-list'),
+            partnerCountBadge: document.getElementById('partner-count-badge'),
+            partnerSplitInfo: document.getElementById('partner-split-info'),
+            splitCount: document.getElementById('split-count'),
+            resPerPartner: document.getElementById('res-per-partner'),
+            btnAddPartner: document.getElementById('btn-add-partner'),
+            docReqText: document.getElementById('doc-req-text')
+        };
+
+        const marketingCopy = {
+            personal: { t: "Personal Finance", s: "Fast, secure loans tailored for your daily needs." },
+            student: { t: "Invest in Your Future 🎓", s: "Special rates for students. Focus on studies, not stress." },
+            farmer: { t: "Grow With Us 🌾", s: "Enjoy up to 3 Months Grace Period for your harvest." },
+            business: { t: "Build Your Dream 💼", s: "Get 1 Month Grace Period to launch your new venture." },
+            gov: { t: "Secure & Simple 🏛️", s: "Direct salary deduction for instant VIP approval." },
+            partner: { t: "Chilimba Access 🤝", s: "Premium priority processing for our Chilimba network." }
+        };
+
+        function updateDynamicDocs() {
+            let text = "Click to upload ID (NRC) & Proof of Income";
+            if (state.track === 'student') text = "Click to upload ID (NRC) & Valid Student ID";
+            if (state.track === 'gov') text = "Click to upload ID (NRC) & Government Payslip";
+            if (state.track === 'partner') text = "Click to upload IDs (NRC) for all Chilimba members";
+            if (state.hasCollateral) text += " + Photos/Proof of Asset";
+            DOM.docReqText.innerText = text;
+        }
+
+        function selectTrack(trackId) {
+            state.track = trackId;
+            document.querySelectorAll('.track-card').forEach(card => card.classList.remove('active'));
+            document.getElementById('track-' + trackId).classList.add('active');
+
+            if (trackId === 'gov') DOM.govBox.classList.remove('hide');
+            else { DOM.govBox.classList.add('hide'); DOM.govCode.value = ''; }
+
+            if (trackId === 'partner') {
+                DOM.chilimbaSection.classList.remove('hide');
+            } else {
+                DOM.chilimbaSection.classList.add('hide');
+                state.partners = 1;
+                DOM.partnerList.innerHTML = '';
+                DOM.partnerCountBadge.innerText = `1 / 10`;
+                DOM.btnAddPartner.classList.remove('hide');
+            }
+
+            if (trackId === 'farmer' || trackId === 'business') DOM.graceNote.classList.remove('hide');
+            else DOM.graceNote.classList.add('hide');
+
+            DOM.bannerTitle.innerText = marketingCopy[trackId].t;
+            DOM.bannerSubtitle.innerText = marketingCopy[trackId].s;
+            
+            updateDynamicDocs(); calculateSpitzer();
+        }
+
+        function setCollateral(value) {
+            state.hasCollateral = value;
+            document.getElementById('col-no').classList.remove('active');
+            document.getElementById('col-yes').classList.remove('active');
+            
+            if (value) document.getElementById('col-yes').classList.add('active');
+            else document.getElementById('col-no').classList.add('active');
+            
+            updateDynamicDocs(); calculateSpitzer();
+        }
+
+        function syncAmount(source) {
+            if (source === 'num') {
+                let val = parseFloat(DOM.amountInput.value);
+                if(val < 500) val = 500;
+                if(val > 50000) val = 50000;
+                DOM.amountSlider.value = val;
+            } else {
+                DOM.amountInput.value = DOM.amountSlider.value;
+            }
+            calculateSpitzer();
+        }
+
+        function calculateSpitzer() {
+            let p = parseFloat(DOM.amountInput.value) || 0;
+            let n = parseInt(DOM.monthsSlider.value) || 12;
+            let hasCollateral = state.hasCollateral;
+            let track = state.track;
+
+            DOM.monthsDisplay.innerText = n + " Months";
+            document.querySelectorAll('.amount-requested').forEach(el => el.innerText = p.toLocaleString());
+
+            if (hasCollateral) {
+                DOM.collateralInfo.classList.remove('hide');
+                DOM.collateralInfo.classList.add('flex');
+                let requiredValue = p / 0.40;
+                DOM.colReqVal.innerText = requiredValue.toLocaleString();
+            } else {
+                DOM.collateralInfo.classList.add('hide');
+                DOM.collateralInfo.classList.remove('flex');
+            }
+
+            let monthlyRate = hasCollateral ? (0.7992 / 12) : 0.12;
+            if (track === 'student') monthlyRate = Math.max(0.01, monthlyRate - 0.02);
+            if (track === 'mother') monthlyRate = Math.max(0.01, monthlyRate - 0.01);
+
+            let pmt = 0;
+            if (n > 0 && p > 0) {
+                pmt = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+            }
+
+            let monthlyNum = Math.round(pmt);
+            let weeklyNum = Math.round(pmt / 4.33);
+
+            DOM.resMonthly.innerText = monthlyNum.toLocaleString();
+            DOM.resWeekly.innerText = weeklyNum.toLocaleString();
+
+            if (track === 'partner' && state.partners > 1) {
+                DOM.partnerSplitInfo.classList.remove('hide');
+                DOM.partnerSplitInfo.classList.add('flex');
+                DOM.splitCount.innerText = state.partners;
+                let perPartner = Math.round(weeklyNum / state.partners);
+                DOM.resPerPartner.innerText = perPartner.toLocaleString();
+            } else {
+                DOM.partnerSplitInfo.classList.add('hide');
+                DOM.partnerSplitInfo.classList.remove('flex');
+            }
+        }
+
+        function addPartner() {
+            if (state.partners >= 10) return;
+            state.partners++;
+            
+            const partnerDiv = document.createElement('div');
+            partnerDiv.className = 'flex gap-2 items-center bg-white p-2 rounded-lg border border-blue-100 shadow-sm animate-fade-in';
+            partnerDiv.id = `partner-${state.partners}`;
+            partnerDiv.innerHTML = `
+                <div class="bg-blue-100 text-blue-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold flex-shrink-0">${state.partners}</div>
+                <input type="text" placeholder="Partner Name" class="w-1/2 p-2 border-none focus:ring-0 outline-none text-sm bg-transparent">
+                <input type="text" placeholder="NRC Number" class="w-1/2 p-2 border-none focus:ring-0 outline-none text-sm bg-transparent border-l border-gray-100">
+                <button onclick="removePartner(${state.partners})" class="text-red-400 hover:text-red-600 p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+            DOM.partnerList.appendChild(partnerDiv);
+            updatePartnerUI();
+        }
+
+        function removePartner(id) {
+            const partnerDiv = document.getElementById(`partner-${id}`);
+            if (partnerDiv) {
+                partnerDiv.remove();
+                state.partners--;
+                let currentCount = 1;
+                Array.from(DOM.partnerList.children).forEach(child => {
+                    currentCount++;
+                    child.id = `partner-${currentCount}`;
+                    child.querySelector('div').innerText = currentCount;
+                    child.querySelector('button').setAttribute('onclick', `removePartner(${currentCount})`);
+                });
+                updatePartnerUI();
+            }
+        }
+
+        function updatePartnerUI() {
+            DOM.partnerCountBadge.innerText = `${state.partners} / 10`;
+            DOM.btnAddPartner.classList.toggle('hide', state.partners >= 10);
+            calculateSpitzer();
+        }
+
+        function handleFileUpload(input) {
+            if (input.files.length > 0) {
+                state.documentsUploaded = true;
+                const fileCount = document.getElementById('file-count');
+                fileCount.classList.remove('hide');
+                fileCount.innerText = `${input.files.length} document(s) securely attached.`;
+            }
+        }
+
+        function submitLoanApplication() {
+            const appName = document.getElementById('app-name').value.trim();
+            if (!appName) return showToast('Error', 'Please enter Applicant Name.', 'error');
+            if (!state.documentsUploaded) return showToast('Error', 'Please upload required documents first.', 'error');
+            
+            let track = state.track;
+            if (track === 'gov' && DOM.govCode.value.trim() === '') {
+                return showToast('Error', 'Government Employee ID is required for this track.', 'error');
+            }
+
+            const loanRequest = {
+                id: 'LN-' + Math.floor(Math.random() * 10000),
+                amount: parseFloat(DOM.amountInput.value),
+                months: parseInt(DOM.monthsSlider.value),
+                track: track,
+                hasCollateral: state.hasCollateral,
+                weekly: parseInt(DOM.resWeekly.innerText.replace(/,/g, '')),
+                date: new Date().toLocaleDateString()
+            };
+
+            // Push to state and send to cloud
+            state.pendingLoans.push(loanRequest);
+            saveStateToCloud();
+
+            showToast('Success', 'Application submitted to cloud successfully!', 'success');
+            
+            state.documentsUploaded = false;
+            document.getElementById('file-count').classList.add('hide');
+            DOM.govCode.value = ''; document.getElementById('app-name').value = '';
+            document.getElementById('app-phone').value = ''; document.getElementById('app-nrc').value = '';
+        }
+
+        function showToast(title, message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<div><strong>${title}</strong><div class="text-sm mt-1 font-normal">${message}</div></div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        function showView(viewId) {
+            document.getElementById('home-view').classList.add('hide');
+            document.getElementById('admin-view').classList.add('hide');
+            document.getElementById('investor-view').classList.add('hide');
+            document.getElementById(viewId).classList.remove('hide');
+            window.scrollTo(0,0);
+        }
+
+        function toggleLoginModal() {
+            const modal = document.getElementById('login-modal');
+            const box = document.getElementById('login-box');
+            if (modal.classList.contains('hide')) {
+                modal.classList.remove('hide');
+                setTimeout(() => box.classList.remove('scale-95'), 10);
+            } else {
+                box.classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hide'), 300);
+            }
+        }
+
+        function processLogin() {
+            const user = document.getElementById('login-user').value.toUpperCase();
+            const pass = document.getElementById('login-pass').value;
+
+            if (user === 'ADMIN' && pass === 'ADMIN') {
+                toggleLoginModal(); showView('admin-view');
+                showToast('Welcome', 'Admin Cloud Dashboard loaded.', 'success');
+            } else if (user === 'YOAV' && pass === 'YOAVH') {
+                toggleLoginModal(); showView('investor-view');
+                showToast('Welcome', 'Live Investor Profile loaded.', 'info');
+            } else {
+                showToast('Access Denied', 'Invalid credentials.', 'error');
+            }
+            document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = '';
+        }
+
+        function logout() { showView('home-view'); showToast('Logged Out', 'Successfully signed out.', 'info'); }
+
+        function updateAdminInputs() {
+            document.getElementById('admin-global-total').value = state.global.total;
+            document.getElementById('admin-global-balance').value = state.global.balance;
+            document.getElementById('admin-yoav-total').value = state.investor.total;
+            document.getElementById('admin-yoav-pct').value = state.investor.activePct;
+        }
+
+        function renderAdminPanel() {
+            const list = document.getElementById('admin-loan-list');
+            document.getElementById('admin-pending-count').innerText = state.pendingLoans.length;
+
+            if (state.pendingLoans.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-400 py-10 font-medium">No pending requests right now.</div>';
+                return;
+            }
+
+            list.innerHTML = '';
+            state.pendingLoans.forEach((loan, index) => {
+                let collateralText = loan.hasCollateral ? 
+                    `<span class="text-green-600">Yes (Req Val: ${(loan.amount / 0.4).toLocaleString()} ZMW)</span>` : 
+                    `<span class="text-red-500">No</span>`;
+
+                let row = document.createElement('div');
+                row.className = 'border border-gray-200 rounded-lg p-4 flex flex-col md:flex-row justify-between items-center bg-white hover:shadow-md transition';
+                row.innerHTML = `
+                    <div class="mb-4 md:mb-0 w-full md:w-3/4">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="bg-gray-800 text-brand-gold text-xs font-bold px-2 py-1 rounded">REQ: ${loan.id}</span>
+                            <span class="text-sm font-bold text-gray-500 capitalize">Track: ${loan.track}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div><strong>Amount:</strong> ${loan.amount.toLocaleString()} ZMW</div>
+                            <div><strong>Term:</strong> ${loan.months} Months</div>
+                            <div><strong>Collateral:</strong> ${collateralText}</div>
+                            <div><strong>Expected Yield:</strong> ${loan.weekly.toLocaleString()} ZMW/week</div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/4 flex justify-end">
+                        <button onclick="approveLoan(${index})" class="w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition">
+                            Approve & Assign
+                        </button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function approveLoan(index) {
+            const approvedLoan = state.pendingLoans.splice(index, 1)[0];
+            state.activeInvestorAssets.push(approvedLoan);
+            saveStateToCloud(); // Save to cloud immediately
+            showToast('Approved', `Loan ${approvedLoan.id} assigned to YOAV.`, 'success');
+        }
+
+        function renderInvestorPanel() {
+            document.getElementById('inv-global-total').innerText = state.global.total.toLocaleString() + ' ZMW';
+            document.getElementById('inv-global-balance').innerText = state.global.balance.toLocaleString() + ' ZMW';
+            document.getElementById('inv-yoav-total').innerText = state.investor.total.toLocaleString() + ' ZMW';
+            
+            let activeZMW = (state.investor.total * state.investor.activePct) / 100;
+            document.getElementById('inv-yoav-active-val').innerText = activeZMW.toLocaleString() + ' ZMW';
+            document.getElementById('inv-yoav-active-pct').innerText = `(${state.investor.activePct}%)`;
+            document.getElementById('inv-yoav-active-bar').style.width = `${state.investor.activePct}%`;
+
+            const list = document.getElementById('investor-asset-list');
+            
+            if (state.activeInvestorAssets.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-400 py-10 font-medium">Waiting for new loans to be approved and assigned...</div>';
+                return;
+            }
+
+            list.innerHTML = '';
+            
+            state.activeInvestorAssets.forEach(asset => {
+                let row = document.createElement('div');
+                row.className = 'border-l-4 border-brand-gold bg-white p-4 rounded shadow-sm flex justify-between items-center';
+                row.innerHTML = `
+                    <div>
+                        <div class="text-sm font-bold text-gray-800">${asset.id} | ${asset.amount.toLocaleString()} ZMW Principal</div>
+                        <div class="text-xs text-gray-500">Term: ${asset.months} Months | Active</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-lg font-black text-green-600">+${asset.weekly.toLocaleString()} ZMW</div>
+                        <div class="text-xs text-gray-400">per week</div>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        window.onload = function() {
+            initFirebaseSync();
+            updateDynamicDocs();
+            calculateSpitzer();
+        };
+    </script>
+</body>
+</html>
