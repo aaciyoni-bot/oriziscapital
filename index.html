@@ -1,442 +1,603 @@
-<html lang="en" dir="ltr">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORIZIS CAPITAL - Premium Financing</title>
-    
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>טיול קרוואנים 2026 - משפחות פרידמן</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            dark: '#0b1a30',
-                            gold: '#d4af37',
-                            goldhover: '#bfa030',
-                            light: '#f4f7f6'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'Segoe UI', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Firebase SDKs (Compat v9/v10) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
-        
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .hide { display: none !important; }
-        
-        /* Premium Range Sliders */
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 8px; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #d4af37; cursor: pointer; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.1s; }
-        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
-
-        /* Toast Notifications */
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { min-width: 250px; padding: 16px 20px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateX(120%); transition: transform 0.3s ease-out; }
-        .toast.show { transform: translateX(0); }
-        .toast.success { background-color: #10b981; }
-        .toast.error { background-color: #ef4444; }
-        .toast.info { background-color: #0b1a30; border-left: 4px solid #d4af37; }
-        
-        /* Premium Track Cards & Toggles */
-        .track-card { box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .track-card.active { border-color: #d4af37; background-color: rgba(212, 175, 55, 0.05); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15); }
-        .track-card.active .icon-bg { background-color: #d4af37; color: white; }
-        .track-card.active .title-text { color: #0b1a30; font-weight: 800; }
-        
-        .col-btn.active { border-color: #0b1a30; background-color: #0b1a30; color: white; box-shadow: 0 4px 10px rgba(11, 26, 48, 0.2); }
-        .col-btn.active .col-subtitle { color: #d4af37; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+        .tab-active { border-bottom: 4px solid #4f46e5; color: #4f46e5; font-weight: bold; background-color: #f8fafc; }
+        .tab-inactive { color: #6b7280; }
+        .tab-inactive:hover { background-color: #f3f4f6; }
+        .item-row { transition: all 0.2s ease; }
+        .item-row:hover { background-color: #f9fafb; }
+        .packed-text { text-decoration: line-through; color: #9ca3af; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .avatar-container { position: relative; display: inline-block; cursor: pointer; transition: transform 0.2s; }
+        .avatar-container:hover { transform: scale(1.05); }
+        .avatar-img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid #4f46e5; background-color: #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .avatar-edit-btn { position: absolute; bottom: 0; right: 0; background-color: #4f46e5; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid white; }
     </style>
 </head>
-<body class="text-gray-800 antialiased min-h-screen flex flex-col bg-slate-50">
+<body class="bg-gray-100 text-gray-800 pb-20 select-none">
 
-    <div id="toast-container"></div>
-
-    <!-- Header -->
-    <header class="bg-brand-dark text-white px-6 py-4 shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="text-2xl font-black text-brand-gold tracking-widest cursor-pointer" onclick="showView('home-view')">
-                ORIZIS CAPITAL
-            </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-sm font-medium opacity-80 flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Zambia (ZMW)
-                </span>
-                <button onclick="toggleLoginModal()" class="bg-brand-gold text-brand-dark px-4 py-2 rounded-lg font-bold hover:bg-brand-goldhover transition shadow-md text-sm">
-                    Login / Portal
+    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-4 shadow-md sticky top-0 z-20">
+        <div class="flex justify-between items-center mb-2">
+            <h1 class="text-xl font-bold"><i class="fas fa-caravan mr-2"></i> קרוואנים 2026</h1>
+            <div class="flex gap-2">
+                <button onclick="exportToExcel()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition shadow" title="ייצוא לאקסל"><i class="fas fa-file-excel mr-1"></i> אקסל</button>
+                <button id="editToggleBtn" onclick="toggleEditMode()" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full text-sm font-semibold transition shadow">
+                    <i class="fas fa-pen mr-1"></i> עריכה
                 </button>
             </div>
         </div>
+        <div class="flex justify-between items-center text-sm mb-1 mt-3">
+            <span id="sync-status" class="text-blue-200"><i class="fas fa-sync fa-spin mr-1"></i> מתחבר לענן...</span>
+            <span id="total-progress-text" class="font-bold">התקדמות כללית: 0%</span>
+        </div>
+        <div class="w-full bg-indigo-900 rounded-full h-2.5 shadow-inner">
+            <div id="total-progress-bar" class="bg-green-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
     </header>
 
+    <!-- Tabs Container -->
+    <nav id="tabs-container" class="flex overflow-x-auto hide-scrollbar bg-white shadow-sm border-b z-10 sticky top-[100px] px-2 py-1">
+        <!-- Tabs will be generated here -->
+    </nav>
+
+    <!-- Avatar Section -->
+    <div class="flex justify-center mt-6 mb-2">
+        <div class="avatar-container" onclick="document.getElementById('avatar-upload').click()">
+            <img id="current-avatar" class="avatar-img" src="https://ui-avatars.com/api/?name=User&background=random" alt="Avatar">
+            <div class="avatar-edit-btn"><i class="fas fa-camera"></i></div>
+            <input type="file" id="avatar-upload" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
+        </div>
+    </div>
+    <div class="text-center mb-6">
+        <h2 id="current-person-title" class="text-2xl font-bold text-gray-800"></h2>
+    </div>
+
     <!-- Main Content Area -->
-    <main class="flex-grow w-full relative">
-        
-        <!-- BORROWER INTERFACE -->
-        <div id="home-view" class="w-full pb-20">
-            <div class="bg-gradient-to-br from-brand-dark to-blue-900 text-white py-16 px-6 text-center shadow-inner relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSI+PC9yZWN0Pgo8cGF0aCBkPSJNMCAwTDggOFpNOCAwTDAgOFoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSI+PC9wYXRoPgo8L3N2Zz4=')]"></div>
-                <div class="max-w-3xl mx-auto relative z-10">
-                    <h1 id="banner-title" class="text-4xl md:text-5xl font-black text-brand-gold mb-4 transition-all duration-500">Need funding?</h1>
-                    <p id="banner-subtitle" class="text-xl md:text-2xl font-light transition-all duration-500">Loans starting from 500 ZMW, fast and secure.</p>
-                </div>
-            </div>
-
-            <div class="max-w-6xl mx-auto -mt-10 px-4 z-20 relative flex flex-col lg:flex-row items-start gap-8">
-                
-                <div class="w-full lg:w-3/5 bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
-                    <h2 class="text-2xl font-bold text-brand-dark mb-6 border-b pb-2">Customize Your Loan</h2>
-                    <div class="space-y-8">
-                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm">
-                                <div class="flex justify-between items-center mb-4">
-                                    <label class="block text-sm font-bold text-brand-dark">Loan Amount</label>
-                                    <div class="relative w-1/2 md:w-1/3">
-                                        <span class="absolute left-3 top-2.5 text-gray-500 font-bold text-sm">ZMW</span>
-                                        <input type="number" id="calc-amount" min="500" max="50000" value="5000" step="100" class="w-full pl-12 p-2 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none text-lg font-black transition text-right bg-white" oninput="syncAmount('num')">
-                                    </div>
-                                </div>
-                                <input type="range" id="calc-amount-slider" min="500" max="50000" value="5000" step="100" class="w-full cursor-pointer" oninput="syncAmount('slider')">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-bold text-brand-dark mb-3">Select Loan Category</label>
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    <div onclick="selectTrack('personal')" id="track-personal" class="track-card active cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center">
-                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2">👤</div>
-                                        <div class="title-text font-bold text-xs text-gray-500">Personal</div>
-                                    </div>
-                                    <div onclick="selectTrack('student')" id="track-student" class="track-card cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center">
-                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2">🎓</div>
-                                        <div class="title-text font-bold text-xs text-gray-500">Student</div>
-                                    </div>
-                                    <div onclick="selectTrack('partner')" id="track-partner" class="track-card cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center">
-                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2">🤝</div>
-                                        <div class="title-text font-bold text-xs text-gray-500">Chilimba</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-6 bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm mt-6">
-                                <div>
-                                    <div class="flex justify-between items-center mb-2">
-                                        <label class="block text-sm font-bold text-brand-dark">Term Length</label>
-                                        <span id="calc-months-display" class="text-brand-gold font-bold">12 Months</span>
-                                    </div>
-                                    <input type="range" id="calc-months" min="3" max="60" value="12" class="w-full mt-4" oninput="calculateSpitzer()">
-                                </div>
-                            </div>
-                    </div>
-                </div>
-
-                <div class="w-full lg:w-2/5 h-fit bg-brand-dark text-white p-8 rounded-2xl shadow-2xl lg:sticky lg:top-24">
-                    <h3 class="text-xl font-bold text-brand-gold mb-8 uppercase">Repayment Summary</h3>
-                    <div class="mb-8">
-                        <div class="text-sm opacity-80 mb-1">Weekly Breakdown</div>
-                        <div class="flex items-baseline">
-                            <span id="res-weekly" class="text-3xl font-bold text-gray-300">0</span>
-                            <span class="text-lg ml-2 text-gray-400">ZMW / week</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <main id="app-content" class="p-4 max-w-3xl mx-auto">
+        <div class="text-center mt-10">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+            <p class="mt-4 text-gray-600 font-medium">טוען נתונים מהענן...</p>
         </div>
-
-        <!-- ADMIN DASHBOARD -->
-        <div id="admin-view" class="w-full hide pb-20 px-4 md:px-10 pt-10">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex justify-between items-center mb-8 border-b-2 border-gray-200 pb-4">
-                    <h2 class="text-3xl font-black text-brand-dark">Admin Control Center</h2>
-                    <button onclick="logout()" class="text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded">Logout</button>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8 border border-brand-gold/50">
-                    <div class="px-6 py-4 bg-gradient-to-r from-brand-dark to-gray-800 text-brand-gold flex justify-between items-center">
-                        <h3 class="font-bold">Global & Investor Management Editor</h3>
-                        <span class="text-xs text-gray-300">Live Cloud Editor</span>
-                    </div>
-                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50">
-                        
-                        <!-- Global Setup -->
-                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                            <h4 class="font-black text-gray-800 mb-4 border-b pb-2">Global Company Capital</h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">Total Global Capital (ZMW)</label>
-                                    <input type="number" id="admin-global-total" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" oninput="previewAdminCalculations()">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">Global Available Balance (ZMW)</label>
-                                    <input type="number" id="admin-global-balance" class="w-full p-3 border-2 border-gray-300 rounded-lg bg-gray-100 font-bold text-green-700 outline-none" disabled>
-                                    <div class="text-xs text-gray-400 font-medium mt-1">Calculates automatically as you type.</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- YOAV Setup -->
-                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                            <h4 class="font-black text-gray-800 mb-4 border-b pb-2">Investor: YOAV HANER</h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">YOAV Total Capital (ZMW)</label>
-                                    <input type="number" id="admin-yoav-total" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" oninput="previewAdminCalculations()">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">YOAV Active Percentage (%)</label>
-                                    <input type="number" id="admin-yoav-pct" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" oninput="previewAdminCalculations()">
-                                    <div class="text-xs text-gray-400 font-medium mt-1">Type here to see the Global Balance update live.</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-2 flex justify-end mt-2">
-                            <button onclick="saveInvestorData()" class="bg-brand-dark hover:bg-gray-800 text-brand-gold font-bold py-3 px-8 rounded-lg shadow transition">
-                                Push & Sync to Cloud
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- INVESTOR DASHBOARD -->
-        <div id="investor-view" class="w-full hide pb-20 px-4 md:px-10 pt-10">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-2 border-gray-200 pb-4">
-                    <div>
-                        <h2 class="text-3xl font-black text-brand-dark">Investor Portfolio</h2>
-                        <p class="text-brand-gold font-bold text-xl">Welcome back, YOAV HANER</p>
-                    </div>
-                    <button onclick="logout()" class="mt-4 md:mt-0 text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded">Logout</button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-brand-dark text-white p-6 rounded-xl shadow-md">
-                            <div class="text-sm opacity-80 font-bold uppercase tracking-wider text-brand-gold">My Total Capital</div>
-                            <div class="text-3xl font-black mt-2" id="inv-yoav-total">0 ZMW</div>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
-                            <div class="text-sm text-gray-500 font-bold uppercase tracking-wider">My Active Investment</div>
-                            <div class="flex items-baseline mt-2">
-                                <div class="text-3xl font-black text-blue-600" id="inv-yoav-active-val">0 ZMW</div>
-                                <div class="text-sm font-bold text-gray-400 ml-2" id="inv-yoav-active-pct">(0%)</div>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
-                                <div class="bg-blue-600 h-2 rounded-full" id="inv-yoav-active-bar" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-span-1 flex flex-col gap-4">
-                        <div class="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-inner">
-                            <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Orizis Global Capital</div>
-                            <div class="text-2xl font-black text-gray-800 mt-1" id="inv-global-total">0 ZMW</div>
-                        </div>
-                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 shadow-inner">
-                            <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Global Available For Loans</div>
-                            <div class="text-2xl font-black text-green-700 mt-1" id="inv-global-balance">0 ZMW</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </main>
 
-    <!-- Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hide items-center justify-center flex">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative">
-            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400">✕</button>
-            <h3 class="text-2xl font-black text-brand-dark mb-4">Portal Login</h3>
-            <div class="space-y-4">
-                <input type="text" id="login-user" placeholder="Username" class="w-full p-3 border-2 border-gray-200 rounded-lg outline-none">
-                <input type="password" id="login-pass" placeholder="Password" class="w-full p-3 border-2 border-gray-200 rounded-lg outline-none">
-                <button onclick="processLogin()" class="w-full bg-brand-dark text-brand-gold font-bold py-3 rounded-lg">Authenticate</button>
+    <!-- Custom Modal Overlay -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform transition-all">
+            <h3 id="modal-title" class="text-xl font-bold mb-3 text-gray-800"></h3>
+            <p id="modal-message" class="text-gray-600 mb-6 text-lg"></p>
+            <div class="flex justify-end gap-3">
+                <button id="modal-cancel-btn" class="px-5 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg hidden font-medium transition">ביטול</button>
+                <button id="modal-ok-btn" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-md transition">אישור</button>
             </div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // FIREBASE CLOUD SETUP
+        //  הגדרות Firebase
         // ==========================================
         const firebaseConfig = {
-            apiKey: "AIzaSyBcmSupcIIhaJ3vpjqs6cMwxgfKNnvvaks",
-            authDomain: "oriziscapital.firebaseapp.com",
-            projectId: "oriziscapital",
-            storageBucket: "oriziscapital.firebasestorage.app",
-            messagingSenderId: "777072849800",
-            appId: "1:777072849800:web:acb87debd6a85179b6003d"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // Global State
-        const state = {
-            pendingLoans: [],
-            activeInvestorAssets: [],
-            track: 'personal',
-            hasCollateral: false,
-            partners: 1,
-            global: { total: 6336000, balance: 892000 },
-            investor: { total: 777600, activePct: 26 }
+            apiKey: "AIzaSyCYd3UQO4d1OQN23quXTwMj1WK2wq0chX4",
+            authDomain: "tiyul-f886a.firebaseapp.com",
+            projectId: "tiyul-f886a",
+            storageBucket: "tiyul-f886a.firebasestorage.app",
+            messagingSenderId: "644534839473",
+            appId: "1:644534839473:web:f7632f361d24183e161a90",
+            measurementId: "G-D54PY1YFPQ",
+            databaseURL: "https://tiyul-f886a-default-rtdb.europe-west1.firebasedatabase.app" 
         };
 
-        function initFirebaseSync() {
-            db.collection('orizis_data').doc('system_state').onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    state.global = data.global || state.global;
-                    state.investor = data.investor || state.investor;
-                    updateAdminInputs();
-                    renderInvestorPanel();
-                } else {
-                    saveStateToCloud(false);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        // רשימת כל המשתתפים והלשוניות
+        const people = [
+            "יוני", "חנה", "ליאור", "אייל", "הילה", "יובל", 
+            "ציוד כללי פרידמן משמר", 
+            "עוזיאל", "שרונה", "להבה", "אליה", "דביר", "הלל", 
+            "ציוד כללי פרידמן אדורה", 
+            "ציוד כללי משותף"
+        ];
+        
+        let appData = { items: {}, avatars: {} };
+        let currentTab = people[0];
+        let isEditMode = false;
+
+        const syncStatus = document.getElementById('sync-status');
+
+        // האזנה לשינויים בענן
+        db.ref('/').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                appData.items = data.items || {};
+                appData.avatars = data.avatars || {};
+            } else {
+                appData = { items: {}, avatars: {} };
+            }
+            
+            // בדיקה וייצור נתונים חסרים למשתתפים חדשים
+            generateInitialData();
+
+            syncStatus.innerHTML = '<i class="fas fa-cloud-check text-green-300 mr-1"></i> מסונכרן';
+            // טעינה ישירה של האפליקציה (ללא מסך משתמש)
+            renderApp();
+        }, (error) => {
+            syncStatus.innerHTML = '<i class="fas fa-exclamation-triangle text-red-300 mr-1"></i> שגיאת חיבור';
+            showModal('שגיאה', 'לא ניתן להתחבר לענן. בדקו חיבור לאינטרנט.');
+        });
+
+        function showModal(title, message, showCancel = false, onOk = null) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            const modal = document.getElementById('custom-modal');
+            const cancelBtn = document.getElementById('modal-cancel-btn');
+            const okBtn = document.getElementById('modal-ok-btn');
+            
+            cancelBtn.style.display = showCancel ? 'block' : 'none';
+            
+            const newOkBtn = okBtn.cloneNode(true);
+            okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+            newOkBtn.onclick = () => {
+                modal.classList.add('hidden');
+                if (onOk) onOk();
+            };
+            
+            newCancelBtn.onclick = () => {
+                modal.classList.add('hidden');
+            };
+
+            modal.classList.remove('hidden');
+        }
+
+        function renderApp() {
+            renderTabs();
+            renderContent();
+            updateTotalProgress();
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tabs-container');
+            container.innerHTML = '';
+
+            people.forEach(person => {
+                const isActive = person === currentTab;
+                const tabClass = isActive ? 'tab-active' : 'tab-inactive';
+                
+                let total = 0, packed = 0;
+                if(appData.items[person]) {
+                    Object.values(appData.items[person]).forEach(item => {
+                        total++;
+                        if(item.packed) packed++;
+                    });
+                }
+                const progressText = total > 0 ? `${packed}/${total}` : '';
+                const isDone = (packed === total && total > 0);
+                const progressColor = isDone ? 'text-green-500 font-bold' : 'text-gray-500';
+
+                const btn = document.createElement('button');
+                btn.className = `px-5 py-3 whitespace-nowrap text-sm flex-shrink-0 transition-colors border-b-2 ${isActive ? 'border-indigo-600 text-indigo-700 font-bold bg-indigo-50/50' : 'border-transparent hover:border-gray-300'}`;
+                btn.innerHTML = `
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="text-base">${person}</span>
+                        ${total > 0 ? `<span class="text-xs bg-gray-100 px-2 py-0.5 rounded-full ${progressColor}">${isDone ? '<i class="fas fa-check mr-1"></i>' : ''}${progressText}</span>` : ''}
+                    </div>
+                `;
+                btn.onclick = () => {
+                    currentTab = person;
+                    renderApp(); // קריאה ישירה לרינדור
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showModal('שגיאה', 'אנא בחרו קובץ תמונה חוקי.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 150;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        }
+                    } else {
+                        if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const base64String = canvas.toDataURL('image/jpeg', 0.7);
+
+                    if (!appData.avatars) appData.avatars = {};
+                    appData.avatars[currentTab] = base64String;
+                    db.ref('avatars/' + currentTab).set(base64String).then(() => {
+                        document.getElementById('current-avatar').src = base64String;
+                    });
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function renderContent() {
+            const content = document.getElementById('app-content');
+            const personItems = appData.items[currentTab] || {};
+            
+            const avatarImg = document.getElementById('current-avatar');
+            const titleElem = document.getElementById('current-person-title');
+            
+            if (appData.avatars && appData.avatars[currentTab]) {
+                avatarImg.src = appData.avatars[currentTab];
+            } else {
+                avatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentTab.split(' ')[0])}&background=random&color=fff&size=150`;
+            }
+            
+            titleElem.innerText = `הרשימה של ${currentTab}`;
+
+            const grouped = {};
+            Object.keys(personItems).forEach(key => {
+                const item = personItems[key];
+                if (!grouped[item.category]) grouped[item.category] = [];
+                grouped[item.category].push({ id: key, ...item });
+            });
+
+            if (Object.keys(grouped).length === 0) {
+                let html = `<div class="text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100"><p class="text-gray-500 mb-4 text-lg">הרשימה ריקה.</p>`;
+                if(isEditMode) {
+                     html += `
+                     <div class="mt-4 p-5 bg-indigo-50 border border-indigo-100 rounded-xl">
+                        <h4 class="font-bold mb-3 text-indigo-800">הוספת פריט ראשון</h4>
+                        <input type="text" id="new-cat-empty" placeholder="קטגוריה (למשל: ביגוד)" class="w-full p-3 border border-indigo-200 rounded-lg mb-3 text-sm focus:ring-2 focus:ring-indigo-400">
+                        <input type="text" id="new-name-empty" placeholder="שם הפריט" class="w-full p-3 border border-indigo-200 rounded-lg mb-3 text-sm focus:ring-2 focus:ring-indigo-400">
+                        <input type="text" id="new-amount-empty" placeholder="כמות" class="w-full p-3 border border-indigo-200 rounded-lg mb-3 text-sm focus:ring-2 focus:ring-indigo-400">
+                        <button onclick="addNewItemEmpty()" class="w-full bg-indigo-600 text-white p-3 rounded-lg text-base font-bold hover:bg-indigo-700 transition shadow">הוסף פריט</button>
+                     </div>`;
+                }
+                html += `</div>`;
+                content.innerHTML = html;
+                return;
+            }
+
+            let html = '';
+            for (const [category, items] of Object.entries(grouped)) {
+                let catPacked = items.filter(i => i.packed).length;
+                let catTotal = items.length;
+                let isCatDone = catPacked === catTotal;
+
+                html += `
+                <div class="bg-white rounded-2xl shadow-sm mb-6 overflow-hidden border ${isCatDone ? 'border-green-200' : 'border-gray-200'}">
+                    <div class="${isCatDone ? 'bg-green-50' : 'bg-gray-50'} px-5 py-4 border-b ${isCatDone ? 'border-green-100' : 'border-gray-200'} flex justify-between items-center transition-colors">
+                        <h3 class="font-bold ${isCatDone ? 'text-green-800' : 'text-gray-800'} text-xl flex items-center">
+                            ${isCatDone ? '<i class="fas fa-check-circle mr-2 text-green-500"></i>' : ''} ${category}
+                        </h3>
+                        <span class="text-sm font-semibold ${isCatDone ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-700'} px-3 py-1 rounded-full shadow-inner">${catPacked}/${catTotal}</span>
+                    </div>
+                    <ul class="divide-y divide-gray-100">
+                `;
+
+                items.forEach(item => {
+                    const checked = item.packed ? 'checked' : '';
+                    const textClass = item.packed ? 'packed-text' : 'text-gray-800';
+                    const bgClass = item.packed ? 'bg-gray-50/50' : '';
+                    
+                    html += `
+                    <li class="item-row p-4 flex justify-between items-center ${bgClass}">
+                        <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleItem('${currentTab}', '${item.id}')">
+                            <div class="relative flex items-center justify-center w-8 h-8 rounded-lg border-2 ${item.packed ? 'border-green-500 bg-green-500' : 'border-gray-300 bg-white'} transition-colors flex-shrink-0">
+                                ${item.packed ? '<i class="fas fa-check text-white text-sm"></i>' : ''}
+                            </div>
+                            <div>
+                                <p class="font-bold ${textClass} text-lg">${item.name}</p>
+                                <p class="text-sm text-gray-500 mt-1"><span class="font-semibold bg-gray-100 px-2 py-0.5 rounded text-gray-600 mr-1">כמות: ${item.amount}</span> ${item.note ? `<span class="text-gray-400">|</span> ${item.note}` : ''}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    if (isEditMode) {
+                        html += `
+                        <div class="flex gap-2 mr-3">
+                            <button onclick="editExistingItem('${currentTab}', '${item.id}', '${item.name.replace(/'/g, "\\'")}', '${item.amount}', '${(item.note||'').replace(/'/g, "\\'")}')" class="text-blue-500 bg-blue-50 p-2.5 rounded-xl hover:bg-blue-100 transition"><i class="fas fa-pen"></i></button>
+                            <button onclick="deleteItem('${currentTab}', '${item.id}')" class="text-red-500 bg-red-50 p-2.5 rounded-xl hover:bg-red-100 transition"><i class="fas fa-trash"></i></button>
+                        </div>`;
+                    }
+                    html += `</li>`;
+                });
+
+                if (isEditMode) {
+                    html += `
+                    <li class="p-4 bg-gray-50 border-t border-dashed border-gray-300">
+                        <div class="flex flex-col gap-3">
+                            <input type="text" id="new-name-${category}" placeholder="שם הפריט החדש" class="w-full p-3 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-400 shadow-sm">
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="new-amount-${category}" placeholder="כמות" class="w-full sm:w-1/3 p-3 border border-gray-300 rounded-lg text-base shadow-sm">
+                                <input type="text" id="new-note-${category}" placeholder="הערה (אופציונלי)" class="w-full sm:w-2/3 p-3 border border-gray-300 rounded-lg text-base shadow-sm">
+                            </div>
+                            <button onclick="addNewItem('${currentTab}', '${category}')" class="w-full bg-green-500 text-white px-5 py-3 rounded-lg font-bold shadow-md hover:bg-green-600 transition"><i class="fas fa-plus mr-1"></i> הוסף פריט</button>
+                        </div>
+                    </li>`;
+                }
+
+                html += `</ul></div>`;
+            }
+            content.innerHTML = html;
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('editToggleBtn');
+            btn.innerHTML = isEditMode ? '<i class="fas fa-check mr-1"></i> סיום עריכה' : '<i class="fas fa-pen mr-1"></i> עריכה';
+            btn.classList.toggle('bg-red-500', isEditMode);
+            btn.classList.toggle('text-white', isEditMode);
+            btn.classList.toggle('bg-white/20', !isEditMode);
+            renderContent();
+        }
+
+        function toggleItem(person, itemId) {
+            if(isEditMode) return;
+            const currentState = appData.items[person][itemId].packed;
+            db.ref(`items/${person}/${itemId}/packed`).set(!currentState);
+        }
+
+        function deleteItem(person, itemId) {
+            showModal('מחיקת פריט', 'האם אתם בטוחים שברצונכם למחוק פריט זה מהרשימה?', true, () => {
+                db.ref(`items/${person}/${itemId}`).remove();
+            });
+        }
+
+        function addNewItem(person, category) {
+            const nameInput = document.getElementById(`new-name-${category}`);
+            const amountInput = document.getElementById(`new-amount-${category}`);
+            const noteInput = document.getElementById(`new-note-${category}`);
+            
+            if(!nameInput.value.trim()) {
+                showModal('חסר שם', 'יש להזין שם לפריט החדש.');
+                return;
+            }
+
+            const newItem = {
+                category: category,
+                name: nameInput.value.trim(),
+                amount: amountInput.value.trim() || "1",
+                note: noteInput.value.trim(),
+                packed: false
+            };
+
+            db.ref(`items/${person}`).push(newItem);
+        }
+
+        function addNewItemEmpty() {
+            const cat = document.getElementById('new-cat-empty').value.trim() || 'כללי';
+            const name = document.getElementById('new-name-empty').value.trim();
+            const amount = document.getElementById('new-amount-empty').value.trim() || "1";
+            
+            if(!name) {
+                showModal('שגיאה', 'חובה להזין שם פריט');
+                return;
+            }
+
+            const newItem = { category: cat, name: name, amount: amount, note: "", packed: false };
+            db.ref(`items/${currentTab}`).push(newItem);
+        }
+
+        function editExistingItem(person, itemId, oldName, oldAmount, oldNote) {
+            const newName = prompt("ערוך שם פריט:", oldName);
+            if (newName === null) return; 
+            const newAmount = prompt("ערוך כמות:", oldAmount);
+            if (newAmount === null) return;
+            const newNote = prompt("ערוך הערה:", oldNote);
+            if (newNote === null) return;
+
+            db.ref(`items/${person}/${itemId}`).update({
+                name: newName.trim() || oldName,
+                amount: newAmount.trim() || oldAmount,
+                note: newNote.trim()
+            });
+        }
+
+        function updateTotalProgress() {
+            let total = 0, packed = 0;
+            
+            Object.values(appData.items || {}).forEach(personItems => {
+                Object.values(personItems).forEach(item => {
+                    total++;
+                    if(item.packed) packed++;
+                });
+            });
+
+            const percent = total === 0 ? 0 : Math.round((packed / total) * 100);
+            document.getElementById('total-progress-bar').style.width = `${percent}%`;
+            document.getElementById('total-progress-text').innerText = `התקדמות כללית: ${percent}% (${packed}/${total} פריטים נארזו)`;
+        }
+
+        function getBaseListForPerson(personName) {
+            let list = [
+                { category: "ביגוד יומיום", name: "חולצות קצרות", amount: "8", note: "מכונת כביסה בדרך" },
+                { category: "ביגוד יומיום", name: "מכנסיים קצרים", amount: "5", note: "" },
+                { category: "ביגוד יומיום", name: "מכנסיים ארוכים", amount: "3", note: "" },
+                { category: "ביגוד יומיום", name: "לבנים / תחתונים", amount: "10", note: "" },
+                { category: "ביגוד יומיום", name: "גרביים", amount: "8", note: "" },
+                { category: "ביגוד יומיום", name: "פיג'מה / בגדי שינה", amount: "2", note: "" },
+                
+                { category: "ביגוד חם (לאוסטריה)", name: "מעיל פליז / סופטשל", amount: "1", note: "חובה לפסגות המושלגות" },
+                { category: "ביגוד חם (לאוסטריה)", name: "חולצות ארוכות (בסיס)", amount: "2", note: "שיטת הבצל" },
+                { category: "ביגוד חם (לאוסטריה)", name: "כובע גרב וכפפות", amount: "1", note: "חובה להרים!" },
+                
+                { category: "הנעלה", name: "נעלי הליכה סגורות / ספורט", amount: "1", note: "נוחות לטיולים" },
+                { category: "הנעלה", name: "סנדלים נוחים", amount: "1", note: "" },
+                { category: "הנעלה", name: "כפכפים", amount: "1", note: "למקלחות ולבריכה" },
+                
+                { category: "בריכה וים", name: "בגדי ים", amount: "2", note: "" },
+                { category: "בריכה וים", name: "חולצת הגנה מהשמש UV", amount: "1", note: "" },
+                { category: "בריכה וים", name: "כובע שמש", amount: "1", note: "" },
+                
+                { category: "היגיינה ורחצה", name: "תיק רחצה אישי", amount: "1", note: "מברשת, משחה, דאודורנט, סבון" },
+                { category: "היגיינה ורחצה", name: "מגבת רחצה", amount: "1", note: "רצוי מיקרופייבר" },
+                { category: "היגיינה ורחצה", name: "מגבת בריכה/ים", amount: "1", note: "" }
+            ];
+
+            // תוספות דת
+            if (["עוזיאל", "דביר", "אליה", "יוני", "ליאור", "אייל", "הלל"].includes(personName)) {
+                list.push({ category: "דת ורוח", name: "כיפות", amount: "3", note: "" });
+                list.push({ category: "דת ורוח", name: "ציצית", amount: "3", note: "" });
+            }
+            if (["עוזיאל", "דביר", "אליה", "יוני", "ליאור", "אייל"].includes(personName)) {
+                list.push({ category: "דת ורוח", name: "תפילין", amount: "1", note: "לא לשכוח!" });
+            }
+            if (["עוזיאל", "יוני"].includes(personName)) {
+                list.push({ category: "דת ורוח", name: "טלית", amount: "1", note: "לשבתות" });
+            }
+
+            // תוספות מיוחדות
+            if (personName === "הילה" || personName === "להבה") {
+                list.push({ category: "ביגוד יומיום", name: "גוזיות", amount: "5", note: "" });
+            }
+
+            // תוספות בנות/נשים לשבת
+            if (["חנה", "שרונה", "הילה", "להבה", "הלל", "יובל"].includes(personName)) {
+                list.push({ category: "ביגוד שבת", name: "שמלות / חצאיות וחולצות", amount: "2", note: "לשבתות בטיול" });
+            } else {
+                list.push({ category: "ביגוד שבת", name: "חולצות מכופתרות", amount: "2", note: "לשבתות" });
+                list.push({ category: "ביגוד שבת", name: "מכנסיים חגיגיים", amount: "2", note: "" });
+            }
+
+            return list;
+        }
+
+        function generateInitialData() {
+            people.forEach(person => {
+                if (!appData.items[person] || Object.keys(appData.items[person]).length === 0) {
+                    let itemsArray = [];
+                    
+                    if (person === "ציוד כללי פרידמן משמר") {
+                        itemsArray = [
+                            { category: "לינה", name: "סדינים ציפות וכריות", amount: "6 סטים", note: "לארוז בצ'ימידנים רכים" },
+                            { category: "לינה", name: "שמיכות פליז/מעבר", amount: "6 שמיכות", note: "קר בלילות!" },
+                            { category: "לינה", name: "כריות שינה", amount: "6", note: "מהבית" },
+                            { category: "שבת וכשרות", name: "כלים מפלסטיק קשיח / חד פעמי", amount: "לכולם", note: "" },
+                            { category: "שבת וכשרות", name: "סירים ומחבתות", amount: "3", note: "מוטבלים" },
+                            { category: "שבת וכשרות", name: "פלטת שבת", amount: "1", note: "לוודא תאימות מתח לקרוואן" },
+                            { category: "שבת וכשרות", name: "מיחם קטן / תרמוס", amount: "1", note: "למים חמים בשבת" },
+                            { category: "שבת וכשרות", name: "נרונים, הבדלה, גביע קידוש", amount: "1 ערכה", note: "" },
+                            { category: "שבת וכשרות", name: "מפה לשבת וכיסוי חלה", amount: "1", note: "" },
+                            { category: "שבת וכשרות", name: "קופסאות פלסטיק למקרר", amount: "4", note: "" },
+                            { category: "מסמכים", name: "דרכונים ורישיון בינלאומי", amount: "לכולם", note: "" }
+                        ];
+                    } else if (person === "ציוד כללי פרידמן אדורה") {
+                         itemsArray = [
+                            { category: "לינה", name: "סדינים ציפות וכריות", amount: "לפי כמות מיטות", note: "לארוז בצ'ימידנים רכים" },
+                            { category: "לינה", name: "שמיכות פליז/מעבר", amount: "לכולם", note: "קר בלילות באוסטריה" },
+                            { category: "לינה", name: "כריות שינה", amount: "לכולם", note: "מהבית" },
+                            { category: "שבת וכשרות", name: "כלים מפלסטיק קשיח / חד פעמי", amount: "לכולם", note: "" },
+                            { category: "שבת וכשרות", name: "סירים ומחבתות", amount: "3", note: "מוטבלים" },
+                            { category: "שבת וכשרות", name: "פלטת שבת", amount: "1", note: "לוודא תאימות מתח לקרוואן" },
+                            { category: "שבת וכשרות", name: "נרונים, כוס קידוש", amount: "1", note: "" },
+                            { category: "מסמכים", name: "דרכונים ורישיון בינלאומי", amount: "לכולם", note: "" }
+                        ];
+                    } else if (person === "ציוד כללי משותף") {
+                        itemsArray = [
+                            { category: "פנאי", name: "משחק אליאס", amount: "1", note: "" },
+                            { category: "פנאי", name: "קלפים וטאקי", amount: "1", note: "" },
+                            { category: "אוכל משותף", name: "פקל קפה", amount: "1", note: "" },
+                            { category: "ציוד נוסף", name: "מתאמי חשמל לאירופה", amount: "4", note: "" },
+                            { category: "ציוד נוסף", name: "ערכת עזרה ראשונה גדולה", amount: "1", note: "כולל פלסטרים ותרופות" },
+                            { category: "ציוד נוסף", name: "כדורים נגד בחילות", amount: "2 קופסאות", note: "לכבישים מפותלים" }
+                        ];
+                    } else if (person === "יובל") {
+                        itemsArray = [
+                            { category: "ציוד תינוקות", name: "חיתולים", amount: "1 חבילה", note: "להתחלה" },
+                            { category: "ציוד תינוקות", name: "מגבונים", amount: "5 חבילות", note: "" },
+                            { category: "ציוד תינוקות", name: "משחת החתלה / סבון תינוקות", amount: "1", note: "" },
+                            { category: "ציוד תינוקות", name: "מנשא גב / טיולון קומפקטי", amount: "1", note: "מנשא חובה למסלולים" },
+                            { category: "ציוד תינוקות", name: "בקבוקים ומוצצים", amount: "מספר יחידות", note: "" },
+                            { category: "ביגוד יומיום", name: "בגדי גוף / חולצות", amount: "10", note: "" },
+                            { category: "ביגוד יומיום", name: "מכנסיים", amount: "10", note: "" },
+                            { category: "ביגוד חם (לאוסטריה)", name: "מעיל פליז / חם", amount: "2", note: "" },
+                            { category: "בריכה וים", name: "בגדי ים וחולצת UV", amount: "3", note: "" }
+                        ];
+                    } else {
+                        itemsArray = getBaseListForPerson(person);
+                    }
+
+                    const personItemsObj = {};
+                    itemsArray.forEach((item, index) => {
+                        const id = `item_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 5)}`;
+                        personItemsObj[id] = { ...item, packed: false };
+                    });
+                    
+                    db.ref(`items/${person}`).set(personItemsObj);
                 }
             });
         }
 
-        function saveStateToCloud(showNotif = false) {
-            db.collection('orizis_data').doc('system_state').set({
-                global: state.global,
-                investor: state.investor
-            }).then(() => {
-                if(showNotif) showToast('Success', 'Data synced to cloud successfully.', 'success');
-            }).catch((err) => console.error(err));
-        }
-
-        // ==========================================
-        // LIVE PREVIEW CALCULATION (Auto-updates while typing)
-        // ==========================================
-        function previewAdminCalculations() {
-            // 1. Calculate how much was deployed BEFORE typing
-            let oldActiveVal = (state.investor.total * state.investor.activePct) / 100;
-
-            // 2. Read what the Admin is currently typing
-            let newGlobalTotal = parseFloat(document.getElementById('admin-global-total').value) || 0;
-            let newYoavTotal = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
-            let newYoavPct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
-
-            // 3. Calculate new active deployment based on typing
-            let newActiveVal = (newYoavTotal * newYoavPct) / 100;
-
-            // 4. Find the differences
-            let globalTotalDiff = newGlobalTotal - state.global.total; 
-            let yoavActiveDiff = newActiveVal - oldActiveVal;          
-
-            // 5. Apply diff to the available balance
-            let adjustedBalance = state.global.balance + globalTotalDiff - yoavActiveDiff;
-            if (adjustedBalance < 0) adjustedBalance = 0; 
-
-            // 6. UPDATE THE INPUT FIELD LIVE!
-            document.getElementById('admin-global-balance').value = adjustedBalance;
-        }
-
-        // Triggered by Admin "Push & Sync" Button
-        function saveInvestorData() {
-            // Grab the live previewed data and permanently save it to State & Cloud
-            state.global.total = parseFloat(document.getElementById('admin-global-total').value) || 0;
-            state.global.balance = parseFloat(document.getElementById('admin-global-balance').value) || 0;
-            state.investor.total = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
-            state.investor.activePct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
-            
-            saveStateToCloud(true);
-        }
-
-        // Calculator & UI Setup
-        function syncAmount(source) {
-            let DOMInput = document.getElementById('calc-amount');
-            let DOMSlider = document.getElementById('calc-amount-slider');
-            if (source === 'num') {
-                DOMSlider.value = DOMInput.value;
-            } else {
-                DOMInput.value = DOMSlider.value;
+        function exportToExcel() {
+            if (!appData.items || Object.keys(appData.items).length === 0) {
+                showModal('שגיאה', 'אין נתונים לייצוא');
+                return;
             }
-            calculateSpitzer();
+
+            let csvContent = "\uFEFF"; 
+            csvContent += "עבור,קטגוריה,פריט,כמות,הערות,נארז?\n";
+
+            people.forEach(person => {
+                if(appData.items[person]) {
+                    Object.values(appData.items[person]).forEach(item => {
+                        const name = (item.name || "").replace(/"/g, '""');
+                        const category = (item.category || "").replace(/"/g, '""');
+                        const amount = (item.amount || "").replace(/"/g, '""');
+                        const note = (item.note || "").replace(/"/g, '""');
+                        const packed = item.packed ? "כן" : "לא";
+
+                        csvContent += `"${person}","${category}","${name}","${amount}","${note}","${packed}"\n`;
+                    });
+                }
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "רשימת_אריזה_קרוואנים.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
-
-        function calculateSpitzer() {
-            let p = parseFloat(document.getElementById('calc-amount').value) || 0;
-            let n = parseInt(document.getElementById('calc-months').value) || 12;
-            let monthlyRate = 0.12;
-            let pmt = (p > 0) ? (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1) : 0;
-            document.getElementById('res-weekly').innerText = Math.round(pmt / 4.33).toLocaleString();
-        }
-
-        function selectTrack(trackId) {
-            document.querySelectorAll('.track-card').forEach(card => card.classList.remove('active'));
-            document.getElementById('track-' + trackId).classList.add('active');
-        }
-
-        function showToast(title, message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<div><strong>${title}</strong><div class="text-sm mt-1 font-normal">${message}</div></div>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
-        }
-
-        function showView(viewId) {
-            document.getElementById('home-view').classList.add('hide');
-            document.getElementById('admin-view').classList.add('hide');
-            document.getElementById('investor-view').classList.add('hide');
-            document.getElementById(viewId).classList.remove('hide');
-            window.scrollTo(0,0);
-        }
-
-        function toggleLoginModal() {
-            const modal = document.getElementById('login-modal');
-            modal.classList.toggle('hide');
-        }
-
-        function processLogin() {
-            const user = document.getElementById('login-user').value.toUpperCase();
-            if (user === 'ADMIN') {
-                toggleLoginModal(); showView('admin-view');
-                updateAdminInputs();
-            } else if (user === 'YOAV') {
-                toggleLoginModal(); showView('investor-view');
-            }
-            document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = '';
-        }
-
-        function logout() { showView('home-view'); }
-
-        function updateAdminInputs() {
-            document.getElementById('admin-global-total').value = state.global.total;
-            document.getElementById('admin-global-balance').value = state.global.balance;
-            document.getElementById('admin-yoav-total').value = state.investor.total;
-            document.getElementById('admin-yoav-pct').value = state.investor.activePct;
-        }
-
-        function renderInvestorPanel() {
-            document.getElementById('inv-global-total').innerText = state.global.total.toLocaleString() + ' ZMW';
-            document.getElementById('inv-global-balance').innerText = state.global.balance.toLocaleString() + ' ZMW';
-            document.getElementById('inv-yoav-total').innerText = state.investor.total.toLocaleString() + ' ZMW';
-            
-            let activeZMW = (state.investor.total * state.investor.activePct) / 100;
-            document.getElementById('inv-yoav-active-val').innerText = activeZMW.toLocaleString() + ' ZMW';
-            document.getElementById('inv-yoav-active-pct').innerText = `(${state.investor.activePct}%)`;
-            document.getElementById('inv-yoav-active-bar').style.width = `${state.investor.activePct}%`;
-        }
-
-        window.onload = function() {
-            initFirebaseSync();
-            calculateSpitzer();
-        };
     </script>
 </body>
 </html>
