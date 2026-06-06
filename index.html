@@ -1,10 +1,10 @@
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORIZIS CAPITAL - Premium Financing</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -26,7 +26,6 @@
         }
     </script>
 
-    <!-- Firebase SDKs (Compat v9/v10) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
@@ -63,7 +62,6 @@
 
     <div id="toast-container"></div>
 
-    <!-- Header -->
     <header class="bg-brand-dark text-white px-6 py-4 shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="text-2xl font-black text-brand-gold tracking-widest cursor-pointer" onclick="showView('home-view')">
@@ -81,12 +79,8 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <main class="flex-grow w-full relative">
         
-        <!-- ======================================================= -->
-        <!-- VIEW 1: HOME (BORROWER INTERFACE)                       -->
-        <!-- ======================================================= -->
         <div id="home-view" class="w-full pb-20">
             
             <div class="bg-gradient-to-br from-brand-dark to-blue-900 text-white py-16 px-6 text-center shadow-inner relative overflow-hidden">
@@ -99,12 +93,10 @@
 
             <div class="max-w-6xl mx-auto -mt-10 px-4 z-20 relative flex flex-col lg:flex-row items-start gap-8">
                 
-                <!-- Left: Form Input -->
                 <div class="w-full lg:w-3/5 bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
                     <h2 class="text-2xl font-bold text-brand-dark mb-6 border-b pb-2">Customize Your Loan</h2>
                     
                     <div class="space-y-8">
-                            <!-- Amount Slider & Input -->
                             <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm">
                                 <div class="flex justify-between items-center mb-4">
                                     <label class="block text-sm font-bold text-brand-dark">Loan Amount</label>
@@ -120,7 +112,6 @@
                                 </div>
                             </div>
 
-                            <!-- Track Selection -->
                             <div>
                                 <label class="block text-sm font-bold text-brand-dark mb-3">Select Loan Category</label>
                                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -151,7 +142,6 @@
                                 </div>
                             </div>
 
-                            <!-- Applicant Details -->
                             <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm mt-6">
                                 <label class="block text-sm font-bold text-brand-dark mb-3">Applicant Details</label>
                                 <div class="space-y-3">
@@ -162,7 +152,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Chilimba Group Section -->
                                 <div id="chilimba-section" class="hide mt-5 p-5 bg-blue-50/50 rounded-xl border border-blue-200 shadow-inner flex-col">
                                     <div class="flex justify-between items-center mb-2">
                                         <label class="text-sm font-bold text-blue-900">Chilimba Group Members</label>
@@ -177,13 +166,11 @@
                                 </div>
                             </div>
 
-                            <!-- Government Code Box -->
                             <div id="gov-code-box" class="hide bg-green-50 border-2 border-green-500 rounded-xl p-5 shadow-inner mt-6 flex-col">
                                 <p class="text-sm text-green-700 mb-3 font-bold">Please enter your official Government Employee ID to link direct salary deduction.</p>
                                 <input type="text" id="gov-emp-code" placeholder="Enter ID e.g., GOV-12345" class="w-full p-3 border-2 border-green-300 rounded-lg focus:border-green-600 outline-none font-mono">
                             </div>
 
-                            <!-- Collateral & Term -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm mt-6">
                                 <div>
                                     <label class="block text-sm font-bold text-brand-dark mb-2">Provide Collateral / Deposit?</label>
@@ -212,7 +199,6 @@
                                 </div>
                             </div>
 
-                            <!-- Collateral Info -->
                             <div id="collateral-info" class="hide mt-4 bg-gradient-to-r from-brand-dark to-blue-900 border border-brand-gold shadow-lg p-5 rounded-xl items-start transform transition-all duration-300">
                                 <div class="bg-brand-gold text-brand-dark p-2 rounded-lg mr-4 shadow-sm flex-shrink-0 mt-1">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.965 11.965 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
@@ -225,7 +211,6 @@
                                 </div>
                             </div>
 
-                            <!-- Document Upload -->
                             <div>
                                 <label class="block text-sm font-bold text-brand-dark mb-2">Required Documents</label>
                                 <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer" onclick="document.getElementById('file-upload').click()">
@@ -240,7 +225,6 @@
                     </div>
                 </div>
 
-                <!-- Right: Result Display -->
                 <div class="w-full lg:w-2/5 h-fit bg-brand-dark text-white p-8 rounded-2xl shadow-2xl lg:sticky lg:top-24 flex flex-col relative overflow-hidden">
                     <div class="absolute top-[-50px] right-[-50px] w-40 h-40 bg-brand-gold rounded-full opacity-20 blur-2xl"></div>
                     <div class="absolute bottom-[-50px] left-[-50px] w-40 h-40 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
@@ -289,9 +273,6 @@
             </div>
         </div>
 
-        <!-- ======================================================= -->
-        <!-- VIEW 2: ADMIN DASHBOARD                                 -->
-        <!-- ======================================================= -->
         <div id="admin-view" class="w-full hide pb-20 px-4 md:px-10 pt-10">
             <div class="max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-8 border-b-2 border-gray-200 pb-4">
@@ -310,7 +291,6 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Global & Investor Management Panel -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8 border border-brand-gold/50">
                     <div class="px-6 py-4 bg-gradient-to-r from-brand-dark to-gray-800 text-brand-gold flex justify-between items-center">
                         <h3 class="font-bold">Global & Investor Management Editor</h3>
@@ -318,23 +298,20 @@
                     </div>
                     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50">
                         
-                        <!-- Global Setup -->
                         <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                             <h4 class="font-black text-gray-800 mb-4 border-b pb-2">Global Company Capital</h4>
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1">Total Global Capital (ZMW)</label>
-                                    <input type="number" id="admin-global-total" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" oninput="previewAdminCalculations()">
+                                    <input type="number" id="admin-global-total" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1">Global Available Balance (ZMW)</label>
-                                    <input type="number" id="admin-global-balance" class="w-full p-3 border-2 border-gray-300 rounded-lg bg-gray-100 font-bold text-green-700 outline-none" disabled>
-                                    <div class="text-xs text-gray-400 font-medium mt-1">Calculates automatically as you type.</div>
+                                    <input type="number" id="admin-global-balance" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- YOAV Setup -->
                         <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                             <h4 class="font-black text-gray-800 mb-4 border-b pb-2">Investor: YOAV HANER</h4>
                             <div class="space-y-4">
@@ -345,7 +322,11 @@
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1">YOAV Active Percentage (%)</label>
                                     <input type="number" id="admin-yoav-pct" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" oninput="previewAdminCalculations()">
-                                    <div class="text-xs text-gray-400 font-medium mt-1">Type here to see the Global Balance update live.</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">YOAV Available to Invest (ZMW)</label>
+                                    <input type="number" id="admin-yoav-balance" class="w-full p-3 border-2 border-gray-300 rounded-lg bg-gray-100 font-bold text-blue-700 outline-none" disabled>
+                                    <div class="text-xs text-gray-400 font-medium mt-1">Calculates automatically: Total - Active.</div>
                                 </div>
                             </div>
                         </div>
@@ -371,9 +352,6 @@
             </div>
         </div>
 
-        <!-- ======================================================= -->
-        <!-- VIEW 3: INVESTOR DASHBOARD (YOAV HANER)                 -->
-        <!-- ======================================================= -->
         <div id="investor-view" class="w-full hide pb-20 px-4 md:px-10 pt-10">
             <div class="max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-2 border-gray-200 pb-4">
@@ -384,38 +362,37 @@
                     <button onclick="logout()" class="mt-4 md:mt-0 text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded">Logout</button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    
-                    <!-- YOAV PRIMARY CARDS -->
-                    <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-brand-dark text-white p-6 rounded-xl shadow-md">
-                            <div class="text-sm opacity-80 font-bold uppercase tracking-wider text-brand-gold">My Total Capital</div>
-                            <div class="text-3xl font-black mt-2" id="inv-yoav-total">0 ZMW</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-brand-dark text-white p-6 rounded-xl shadow-md">
+                        <div class="text-sm opacity-80 font-bold uppercase tracking-wider text-brand-gold">My Total Capital</div>
+                        <div class="text-3xl font-black mt-2" id="inv-yoav-total">0 ZMW</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
+                        <div class="text-sm text-gray-500 font-bold uppercase tracking-wider">My Active Investment</div>
+                        <div class="flex items-baseline mt-2">
+                            <div class="text-3xl font-black text-blue-600" id="inv-yoav-active-val">0 ZMW</div>
+                            <div class="text-sm font-bold text-gray-400 ml-2" id="inv-yoav-active-pct">(0%)</div>
                         </div>
-                        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
-                            <div class="text-sm text-gray-500 font-bold uppercase tracking-wider">My Active Investment</div>
-                            <div class="flex items-baseline mt-2">
-                                <div class="text-3xl font-black text-blue-600" id="inv-yoav-active-val">0 ZMW</div>
-                                <div class="text-sm font-bold text-gray-400 ml-2" id="inv-yoav-active-pct">(0%)</div>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
-                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-1000" id="inv-yoav-active-bar" style="width: 0%"></div>
-                            </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div class="bg-blue-600 h-2 rounded-full transition-all duration-1000" id="inv-yoav-active-bar" style="width: 0%"></div>
                         </div>
                     </div>
-
-                    <!-- GLOBAL SECONDARY CARDS -->
-                    <div class="col-span-1 flex flex-col gap-4">
-                        <div class="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-inner">
-                            <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Orizis Global Capital</div>
-                            <div class="text-2xl font-black text-gray-800 mt-1" id="inv-global-total">0 ZMW</div>
-                        </div>
-                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 shadow-inner">
-                            <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Global Available For Loans</div>
-                            <div class="text-2xl font-black text-green-700 mt-1" id="inv-global-balance">0 ZMW</div>
-                        </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-green-500">
+                        <div class="text-sm text-gray-500 font-bold uppercase tracking-wider">Available to Invest</div>
+                        <div class="text-3xl font-black text-green-600 mt-2" id="inv-yoav-balance">0 ZMW</div>
+                        <div class="text-sm text-gray-400 mt-1 font-medium">Ready for deployment</div>
                     </div>
+                </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-inner">
+                        <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Orizis Global Capital</div>
+                        <div class="text-2xl font-black text-gray-800 mt-1" id="inv-global-total">0 ZMW</div>
+                    </div>
+                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 shadow-inner">
+                        <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Global Available For Loans</div>
+                        <div class="text-2xl font-black text-green-700 mt-1" id="inv-global-balance">0 ZMW</div>
+                    </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-md overflow-hidden">
@@ -436,14 +413,13 @@
 
     </main>
 
-    <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hide items-center justify-center flex">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative transform scale-95 transition-transform duration-300" id="login-box">
             <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <h3 class="text-2xl font-black text-brand-dark mb-2">Portal Login</h3>
-            <p class="text-sm text-gray-500 mb-6">Access Admin or Investor dashboard.</p>
+            <p class="text-sm text-gray-500 mb-6">Enter your credentials to access the dashboard.</p>
             
             <div class="space-y-4">
                 <div>
@@ -456,16 +432,12 @@
                 </div>
                 <button onclick="processLogin()" class="w-full bg-brand-dark text-brand-gold font-bold py-3 rounded-lg hover:bg-gray-800 transition">Authenticate</button>
             </div>
-            
-            <div class="mt-4 text-xs text-gray-400 text-center">
-                Hint: YOAV/YOAVH for investor, ADMIN/ADMIN for admin.
-            </div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // FIREBASE CLOUD SETUP
+        // FIREBASE CLOUD SETUP - NEW CONFIGURATION
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBcmSupcIIhaJ3vpjqs6cMwxgfKNnvvaks",
@@ -509,7 +481,6 @@
             });
         }
 
-        // Push State to Cloud
         function saveStateToCloud(showNotif = false) {
             db.collection('orizis_data').doc('system_state').set({
                 global: state.global,
@@ -525,41 +496,26 @@
         }
 
         // ==========================================
-        // LIVE PREVIEW CALCULATION (Auto-updates while typing)
+        // LIVE PREVIEW CALCULATION 
         // ==========================================
         function previewAdminCalculations() {
-            let oldActiveVal = (state.investor.total * state.investor.activePct) / 100;
-            let newGlobalTotal = parseFloat(document.getElementById('admin-global-total').value) || 0;
             let newYoavTotal = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
             let newYoavPct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
 
             let newActiveVal = (newYoavTotal * newYoavPct) / 100;
-            let globalTotalDiff = newGlobalTotal - state.global.total; 
-            let yoavActiveDiff = newActiveVal - oldActiveVal;          
+            let newYoavBalance = newYoavTotal - newActiveVal;
+            
+            if(newYoavBalance < 0) newYoavBalance = 0; 
 
-            let adjustedBalance = state.global.balance + globalTotalDiff - yoavActiveDiff;
-            if (adjustedBalance < 0) adjustedBalance = 0; 
-
-            document.getElementById('admin-global-balance').value = adjustedBalance;
+            // Show live on admin screen
+            document.getElementById('admin-yoav-balance').value = newYoavBalance;
         }
 
         function saveInvestorData() {
-            let oldActiveVal = (state.investor.total * state.investor.activePct) / 100;
-            let newGlobalTotal = parseFloat(document.getElementById('admin-global-total').value) || 0;
-            let newYoavTotal = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
-            let newYoavPct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
-
-            let newActiveVal = (newYoavTotal * newYoavPct) / 100;
-            let globalTotalDiff = newGlobalTotal - state.global.total; 
-            let yoavActiveDiff = newActiveVal - oldActiveVal;          
-
-            let adjustedBalance = state.global.balance + globalTotalDiff - yoavActiveDiff;
-            if (adjustedBalance < 0) adjustedBalance = 0; 
-
-            state.global.total = newGlobalTotal;
-            state.global.balance = adjustedBalance;
-            state.investor.total = newYoavTotal;
-            state.investor.activePct = newYoavPct;
+            state.global.total = parseFloat(document.getElementById('admin-global-total').value) || 0;
+            state.global.balance = parseFloat(document.getElementById('admin-global-balance').value) || 0;
+            state.investor.total = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
+            state.investor.activePct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
             
             saveStateToCloud(true);
         }
@@ -567,6 +523,7 @@
         // ==========================================
         // UI & CALCULATOR LOGIC
         // ==========================================
+        
         const DOM = {
             amountInput: document.getElementById('calc-amount'),
             amountSlider: document.getElementById('calc-amount-slider'),
@@ -839,6 +796,7 @@
             document.getElementById('admin-global-balance').value = state.global.balance;
             document.getElementById('admin-yoav-total').value = state.investor.total;
             document.getElementById('admin-yoav-pct').value = state.investor.activePct;
+            previewAdminCalculations();
         }
 
         function renderAdminPanel() {
@@ -889,14 +847,22 @@
         }
 
         function renderInvestorPanel() {
+            // Global Cards
             document.getElementById('inv-global-total').innerText = state.global.total.toLocaleString() + ' ZMW';
             document.getElementById('inv-global-balance').innerText = state.global.balance.toLocaleString() + ' ZMW';
+            
+            // Yoav Cards
             document.getElementById('inv-yoav-total').innerText = state.investor.total.toLocaleString() + ' ZMW';
             
             let activeZMW = (state.investor.total * state.investor.activePct) / 100;
+            let balanceZMW = state.investor.total - activeZMW;
+            if(balanceZMW < 0) balanceZMW = 0;
+
             document.getElementById('inv-yoav-active-val').innerText = activeZMW.toLocaleString() + ' ZMW';
             document.getElementById('inv-yoav-active-pct').innerText = `(${state.investor.activePct}%)`;
             document.getElementById('inv-yoav-active-bar').style.width = `${state.investor.activePct}%`;
+            
+            document.getElementById('inv-yoav-balance').innerText = balanceZMW.toLocaleString() + ' ZMW';
 
             const list = document.getElementById('investor-asset-list');
             
