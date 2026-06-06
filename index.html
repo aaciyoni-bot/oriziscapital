@@ -1,602 +1,935 @@
-<html lang="he" dir="rtl">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>טיול קרוואנים 2026 - משפחות פרידמן</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORIZIS CAPITAL - Premium Financing</title>
     
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0b1a30',
+                            gold: '#d4af37',
+                            goldhover: '#bfa030',
+                            light: '#f4f7f6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Firebase SDKs (Compat v9/v10) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
-        .tab-active { border-bottom: 4px solid #4f46e5; color: #4f46e5; font-weight: bold; background-color: #f8fafc; }
-        .tab-inactive { color: #6b7280; }
-        .tab-inactive:hover { background-color: #f3f4f6; }
-        .item-row { transition: all 0.2s ease; }
-        .item-row:hover { background-color: #f9fafb; }
-        .packed-text { text-decoration: line-through; color: #9ca3af; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .avatar-container { position: relative; display: inline-block; cursor: pointer; transition: transform 0.2s; }
-        .avatar-container:hover { transform: scale(1.05); }
-        .avatar-img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid #4f46e5; background-color: #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .avatar-edit-btn { position: absolute; bottom: 0; right: 0; background-color: #4f46e5; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid white; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .hide { display: none !important; }
+        
+        /* Premium Range Sliders */
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 8px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #d4af37; cursor: pointer; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.1s; }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { min-width: 250px; padding: 16px 20px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateX(120%); transition: transform 0.3s ease-out; }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background-color: #10b981; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #0b1a30; border-left: 4px solid #d4af37; }
+        
+        /* Premium Track Cards & Toggles */
+        .track-card { box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .track-card.active { border-color: #d4af37; background-color: rgba(212, 175, 55, 0.05); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15); }
+        .track-card.active .icon-bg { background-color: #d4af37; color: white; }
+        .track-card.active .title-text { color: #0b1a30; font-weight: 800; }
+        
+        .col-btn.active { border-color: #0b1a30; background-color: #0b1a30; color: white; box-shadow: 0 4px 10px rgba(11, 26, 48, 0.2); }
+        .col-btn.active .col-subtitle { color: #d4af37; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 pb-20 select-none">
+<body class="text-gray-800 antialiased min-h-screen flex flex-col bg-slate-50">
 
-    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-4 shadow-md sticky top-0 z-20">
-        <div class="flex justify-between items-center mb-2">
-            <h1 class="text-xl font-bold"><i class="fas fa-caravan mr-2"></i> קרוואנים 2026</h1>
-            <div class="flex gap-2">
-                <button onclick="exportToExcel()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition shadow" title="ייצוא לאקסל"><i class="fas fa-file-excel mr-1"></i> אקסל</button>
-                <button id="editToggleBtn" onclick="toggleEditMode()" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full text-sm font-semibold transition shadow">
-                    <i class="fas fa-pen mr-1"></i> עריכה
+    <div id="toast-container"></div>
+
+    <!-- Header -->
+    <header class="bg-brand-dark text-white px-6 py-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="text-2xl font-black text-brand-gold tracking-widest cursor-pointer" onclick="showView('home-view')">
+                ORIZIS CAPITAL
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm font-medium opacity-80 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Zambia (ZMW)
+                </span>
+                <button onclick="toggleLoginModal()" class="bg-brand-gold text-brand-dark px-4 py-2 rounded-lg font-bold hover:bg-brand-goldhover transition shadow-md text-sm">
+                    Login / Portal
                 </button>
             </div>
         </div>
-        <div class="flex justify-between items-center text-sm mb-1 mt-3">
-            <span id="sync-status" class="text-blue-200"><i class="fas fa-sync fa-spin mr-1"></i> מתחבר לענן...</span>
-            <span id="total-progress-text" class="font-bold">התקדמות כללית: 0%</span>
-        </div>
-        <div class="w-full bg-indigo-900 rounded-full h-2.5 shadow-inner">
-            <div id="total-progress-bar" class="bg-green-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
-        </div>
     </header>
 
-    <!-- Tabs Container -->
-    <nav id="tabs-container" class="flex overflow-x-auto hide-scrollbar bg-white shadow-sm border-b z-10 sticky top-[100px] px-2 py-1">
-        <!-- Tabs will be generated here -->
-    </nav>
-
-    <!-- Avatar Section -->
-    <div class="flex justify-center mt-6 mb-2">
-        <div class="avatar-container" onclick="document.getElementById('avatar-upload').click()">
-            <img id="current-avatar" class="avatar-img" src="https://ui-avatars.com/api/?name=User&background=random" alt="Avatar">
-            <div class="avatar-edit-btn"><i class="fas fa-camera"></i></div>
-            <input type="file" id="avatar-upload" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
-        </div>
-    </div>
-    <div class="text-center mb-6">
-        <h2 id="current-person-title" class="text-2xl font-bold text-gray-800"></h2>
-    </div>
-
     <!-- Main Content Area -->
-    <main id="app-content" class="p-4 max-w-3xl mx-auto">
-        <div class="text-center mt-10">
-            <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
-            <p class="mt-4 text-gray-600 font-medium">טוען נתונים מהענן...</p>
+    <main class="flex-grow w-full relative">
+        
+        <!-- ======================================================= -->
+        <!-- VIEW 1: HOME (BORROWER INTERFACE)                       -->
+        <!-- ======================================================= -->
+        <div id="home-view" class="w-full pb-20">
+            
+            <div class="bg-gradient-to-br from-brand-dark to-blue-900 text-white py-16 px-6 text-center shadow-inner relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSI+PC9yZWN0Pgo8cGF0aCBkPSJNMCAwTDggOFpNOCAwTDAgOFoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSI+PC9wYXRoPgo8L3N2Zz4=')]"></div>
+                <div class="max-w-3xl mx-auto relative z-10">
+                    <h1 id="banner-title" class="text-4xl md:text-5xl font-black text-brand-gold mb-4 transition-all duration-500">Need funding?</h1>
+                    <p id="banner-subtitle" class="text-xl md:text-2xl font-light transition-all duration-500">Loans starting from 500 ZMW, fast and secure.</p>
+                </div>
+            </div>
+
+            <div class="max-w-6xl mx-auto -mt-10 px-4 z-20 relative flex flex-col lg:flex-row items-start gap-8">
+                
+                <!-- Left: Form Input -->
+                <div class="w-full lg:w-3/5 bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+                    <h2 class="text-2xl font-bold text-brand-dark mb-6 border-b pb-2">Customize Your Loan</h2>
+                    
+                    <div class="space-y-8">
+                            <!-- Amount Slider & Input -->
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm">
+                                <div class="flex justify-between items-center mb-4">
+                                    <label class="block text-sm font-bold text-brand-dark">Loan Amount</label>
+                                    <div class="relative w-1/2 md:w-1/3">
+                                        <span class="absolute left-3 top-2.5 text-gray-500 font-bold text-sm">ZMW</span>
+                                        <input type="number" id="calc-amount" min="500" max="50000" value="5000" step="100" class="w-full pl-12 p-2 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none text-lg font-black transition text-right bg-white" oninput="syncAmount('num')">
+                                    </div>
+                                </div>
+                                <input type="range" id="calc-amount-slider" min="500" max="50000" value="5000" step="100" class="w-full cursor-pointer" oninput="syncAmount('slider')">
+                                <div class="flex justify-between text-xs text-gray-400 mt-2 font-bold">
+                                    <span>500 ZMW</span>
+                                    <span>50,000 ZMW</span>
+                                </div>
+                            </div>
+
+                            <!-- Track Selection -->
+                            <div>
+                                <label class="block text-sm font-bold text-brand-dark mb-3">Select Loan Category</label>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    <div onclick="selectTrack('personal')" id="track-personal" class="track-card active cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center hover:border-brand-gold transition duration-200">
+                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2 transition">👤</div>
+                                        <div class="title-text font-bold text-xs text-gray-500 transition">Personal</div>
+                                    </div>
+                                    <div onclick="selectTrack('student')" id="track-student" class="track-card cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center hover:border-brand-gold transition duration-200">
+                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2 transition">🎓</div>
+                                        <div class="title-text font-bold text-xs text-gray-500 transition">Student</div>
+                                    </div>
+                                    <div onclick="selectTrack('farmer')" id="track-farmer" class="track-card cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center hover:border-brand-gold transition duration-200">
+                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2 transition">🌾</div>
+                                        <div class="title-text font-bold text-xs text-gray-500 transition">Farmer</div>
+                                    </div>
+                                    <div onclick="selectTrack('business')" id="track-business" class="track-card cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center hover:border-brand-gold transition duration-200">
+                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2 transition">💼</div>
+                                        <div class="title-text font-bold text-xs text-gray-500 transition">Business</div>
+                                    </div>
+                                    <div onclick="selectTrack('gov')" id="track-gov" class="track-card cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center hover:border-brand-gold transition duration-200">
+                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2 transition">🏛️</div>
+                                        <div class="title-text font-bold text-xs text-gray-500 transition">Gov Employee</div>
+                                    </div>
+                                    <div onclick="selectTrack('partner')" id="track-partner" class="track-card cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-3 text-center hover:border-brand-gold transition duration-200">
+                                        <div class="icon-bg w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-lg mb-2 transition">🤝</div>
+                                        <div class="title-text font-bold text-xs text-gray-500 transition">Chilimba</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Applicant Details -->
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm mt-6">
+                                <label class="block text-sm font-bold text-brand-dark mb-3">Applicant Details</label>
+                                <div class="space-y-3">
+                                    <input type="text" id="app-name" placeholder="Full Name" class="w-full p-3 border border-gray-200 rounded-lg focus:border-brand-gold outline-none">
+                                    <div class="flex gap-3">
+                                        <input type="tel" id="app-phone" placeholder="Phone Number" class="w-full p-3 border border-gray-200 rounded-lg focus:border-brand-gold outline-none">
+                                        <input type="text" id="app-nrc" placeholder="NRC / ID Number" class="w-full p-3 border border-gray-200 rounded-lg focus:border-brand-gold outline-none">
+                                    </div>
+                                </div>
+
+                                <!-- Chilimba Group Section -->
+                                <div id="chilimba-section" class="hide mt-5 p-5 bg-blue-50/50 rounded-xl border border-blue-200 shadow-inner flex-col">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="text-sm font-bold text-blue-900">Chilimba Group Members</label>
+                                        <span id="partner-count-badge" class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">1 / 10</span>
+                                    </div>
+                                    <p class="text-xs text-blue-700 mb-4">Add up to 9 more partners to split the weekly repayment cost!</p>
+                                    <div id="partner-list" class="space-y-2 mb-3"></div>
+                                    <button onclick="addPartner()" id="btn-add-partner" class="w-full border-2 border-dashed border-blue-400 text-blue-600 font-bold py-3 rounded-xl hover:bg-blue-100 transition flex items-center justify-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                        Add Partner
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Government Code Box -->
+                            <div id="gov-code-box" class="hide bg-green-50 border-2 border-green-500 rounded-xl p-5 shadow-inner mt-6 flex-col">
+                                <p class="text-sm text-green-700 mb-3 font-bold">Please enter your official Government Employee ID to link direct salary deduction.</p>
+                                <input type="text" id="gov-emp-code" placeholder="Enter ID e.g., GOV-12345" class="w-full p-3 border-2 border-green-300 rounded-lg focus:border-green-600 outline-none font-mono">
+                            </div>
+
+                            <!-- Collateral & Term -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm mt-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-brand-dark mb-2">Provide Collateral / Deposit?</label>
+                                    <div class="flex space-x-3 mt-2">
+                                        <div onclick="setCollateral(false)" id="col-no" class="col-btn active flex-1 p-3 border-2 border-gray-300 rounded-xl cursor-pointer text-center transition">
+                                            <span class="font-bold block text-sm">No</span>
+                                            <span class="col-subtitle text-[10px] text-gray-500 font-bold uppercase mt-1">Standard</span>
+                                        </div>
+                                        <div onclick="setCollateral(true)" id="col-yes" class="col-btn flex-1 p-3 border-2 border-gray-300 rounded-xl cursor-pointer text-center transition relative overflow-hidden bg-white">
+                                            <div class="absolute top-0 right-0 bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl-lg tracking-wider">SALE</div>
+                                            <span class="font-bold block text-sm">Yes</span>
+                                            <span class="col-subtitle text-[10px] text-green-600 font-bold uppercase mt-1">Huge Discount!</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="block text-sm font-bold text-brand-dark">Term Length</label>
+                                        <span id="calc-months-display" class="text-brand-gold font-bold">12 Months</span>
+                                    </div>
+                                    <input type="range" id="calc-months" min="3" max="60" value="12" class="w-full mt-4" oninput="calculateSpitzer()">
+                                    <div class="flex justify-between text-xs text-gray-400 mt-2 font-bold">
+                                        <span>3 Months</span>
+                                        <span>60 Months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Collateral Info -->
+                            <div id="collateral-info" class="hide mt-4 bg-gradient-to-r from-brand-dark to-blue-900 border border-brand-gold shadow-lg p-5 rounded-xl items-start transform transition-all duration-300">
+                                <div class="bg-brand-gold text-brand-dark p-2 rounded-lg mr-4 shadow-sm flex-shrink-0 mt-1">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.965 11.965 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                </div>
+                                <div>
+                                    <strong class="block mb-1 text-brand-gold text-sm uppercase tracking-wider font-black">Security Deposit Required (40% LTV)</strong>
+                                    <p class="text-sm text-gray-200">
+                                        To secure the requested <span class="font-bold amount-requested text-white bg-black/30 px-1 rounded">5,000</span> ZMW with this massive premium discount, you must pledge an asset valued at exactly or above <span id="collateral-required-val" class="font-black text-lg text-brand-gold mx-1">12,500</span> ZMW.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Document Upload -->
+                            <div>
+                                <label class="block text-sm font-bold text-brand-dark mb-2">Required Documents</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer" onclick="document.getElementById('file-upload').click()">
+                                    <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <span id="doc-req-text" class="text-gray-500 font-bold block mb-1">Click to upload ID (NRC) & Proof of Income</span>
+                                    <span class="text-xs text-gray-400">PDF, JPG, PNG up to 10MB</span>
+                                    <input type="file" id="file-upload" class="hidden" multiple onchange="handleFileUpload(this)">
+                                </div>
+                                <div id="file-count" class="text-xs text-green-600 font-bold mt-2 text-center hide">Files uploaded successfully!</div>
+                            </div>
+
+                    </div>
+                </div>
+
+                <!-- Right: Result Display -->
+                <div class="w-full lg:w-2/5 h-fit bg-brand-dark text-white p-8 rounded-2xl shadow-2xl lg:sticky lg:top-24 flex flex-col relative overflow-hidden">
+                    <div class="absolute top-[-50px] right-[-50px] w-40 h-40 bg-brand-gold rounded-full opacity-20 blur-2xl"></div>
+                    <div class="absolute bottom-[-50px] left-[-50px] w-40 h-40 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
+                    
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-brand-gold mb-8 uppercase tracking-wide">Repayment Summary</h3>
+                        
+                        <div class="mb-8">
+                            <div class="text-sm opacity-80 mb-1">Monthly Payment</div>
+                            <div class="flex items-baseline border-b border-gray-600 pb-4">
+                                <span id="res-monthly" class="text-5xl font-black">0</span>
+                                <span class="text-xl ml-2 font-medium">ZMW</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <div class="text-sm opacity-80 mb-1">Weekly Breakdown</div>
+                            <div class="flex items-baseline">
+                                <span id="res-weekly" class="text-3xl font-bold text-gray-300">0</span>
+                                <span class="text-lg ml-2 font-medium text-gray-400">ZMW / week</span>
+                            </div>
+
+                            <div id="partner-split-info" class="hide mt-3 bg-gradient-to-r from-blue-900 to-brand-dark p-4 rounded-xl border border-brand-gold/30 shadow-lg transform transition-all duration-300 flex-col">
+                                <div class="text-xs text-brand-gold uppercase tracking-wider mb-1 font-bold">Chilimba Split (<span id="split-count">2</span> Members)</div>
+                                <div class="flex items-baseline">
+                                    <span id="res-per-partner" class="text-4xl font-black text-white drop-shadow-md">0</span>
+                                    <span class="text-sm ml-2 text-gray-300 font-medium">ZMW / week each!</span>
+                                </div>
+                                <div class="text-[10px] text-green-400 mt-1 font-bold">Highly Affordable!</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/10 p-4 rounded-xl text-sm leading-relaxed border border-white/5 shadow-inner">
+                            <strong class="text-brand-gold">Spitzer Model Active:</strong> Fixed payments throughout the entire period. Covers both principal and interest seamlessly.
+                            <span id="grace-note" class="block mt-2 text-green-400 font-bold hide">Includes Grace Period Benefit!</span>
+                        </div>
+                    </div>
+
+                    <div class="relative z-10 mt-8">
+                        <button onclick="submitLoanApplication()" class="w-full bg-brand-gold hover:bg-brand-goldhover text-brand-dark font-black text-lg py-4 rounded-xl shadow-lg transition-transform transform hover:scale-[1.02]">
+                            Submit Application
+                        </button>
+                        <p class="text-center text-xs opacity-60 mt-4 font-medium">Safe, secure, and regulated in Zambia.</p>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 2: ADMIN DASHBOARD                                 -->
+        <!-- ======================================================= -->
+        <div id="admin-view" class="w-full hide pb-20 px-4 md:px-10 pt-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-center mb-8 border-b-2 border-gray-200 pb-4">
+                    <h2 class="text-3xl font-black text-brand-dark">Admin Control Center</h2>
+                    <button onclick="logout()" class="text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded">Logout</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+                        <div class="text-sm text-gray-500 font-bold">Total Pending Requests</div>
+                        <div id="admin-pending-count" class="text-3xl font-black text-brand-dark mt-2">0</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
+                        <div class="text-sm text-gray-500 font-bold">System Status</div>
+                        <div class="text-xl font-black text-green-600 mt-2">Cloud Connected</div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Global & Investor Management Panel -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8 border border-brand-gold/50">
+                    <div class="px-6 py-4 bg-gradient-to-r from-brand-dark to-gray-800 text-brand-gold flex justify-between items-center">
+                        <h3 class="font-bold">Global & Investor Management Editor</h3>
+                        <span class="text-xs text-gray-300">Live Cloud Editor</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50">
+                        
+                        <!-- Global Setup -->
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="font-black text-gray-800 mb-4 border-b pb-2">Global Company Capital</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Total Global Capital (ZMW)</label>
+                                    <input type="number" id="admin-global-total" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" oninput="previewAdminCalculations()">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Global Available Balance (ZMW)</label>
+                                    <input type="number" id="admin-global-balance" class="w-full p-3 border-2 border-gray-300 rounded-lg bg-gray-100 font-bold text-green-700 outline-none" disabled>
+                                    <div class="text-xs text-gray-400 font-medium mt-1">Calculates automatically as you type.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- YOAV Setup -->
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="font-black text-gray-800 mb-4 border-b pb-2">Investor: YOAV HANER</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">YOAV Total Capital (ZMW)</label>
+                                    <input type="number" id="admin-yoav-total" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" oninput="previewAdminCalculations()">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">YOAV Active Percentage (%)</label>
+                                    <input type="number" id="admin-yoav-pct" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-brand-gold outline-none" oninput="previewAdminCalculations()">
+                                    <div class="text-xs text-gray-400 font-medium mt-1">Type here to see the Global Balance update live.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 flex justify-end mt-2">
+                            <button onclick="saveInvestorData()" class="bg-brand-dark hover:bg-gray-800 text-brand-gold font-bold py-3 px-8 rounded-lg shadow transition">
+                                Push & Sync to Cloud
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-bold text-gray-800">Pending Loan Approvals</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="admin-loan-list" class="space-y-4">
+                            <div class="text-center text-gray-400 py-10 font-medium">No pending requests right now.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 3: INVESTOR DASHBOARD (YOAV HANER)                 -->
+        <!-- ======================================================= -->
+        <div id="investor-view" class="w-full hide pb-20 px-4 md:px-10 pt-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-2 border-gray-200 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-brand-dark">Investor Portfolio</h2>
+                        <p class="text-brand-gold font-bold text-xl">Welcome back, YOAV HANER</p>
+                    </div>
+                    <button onclick="logout()" class="mt-4 md:mt-0 text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded">Logout</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    
+                    <!-- YOAV PRIMARY CARDS -->
+                    <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-brand-dark text-white p-6 rounded-xl shadow-md">
+                            <div class="text-sm opacity-80 font-bold uppercase tracking-wider text-brand-gold">My Total Capital</div>
+                            <div class="text-3xl font-black mt-2" id="inv-yoav-total">0 ZMW</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
+                            <div class="text-sm text-gray-500 font-bold uppercase tracking-wider">My Active Investment</div>
+                            <div class="flex items-baseline mt-2">
+                                <div class="text-3xl font-black text-blue-600" id="inv-yoav-active-val">0 ZMW</div>
+                                <div class="text-sm font-bold text-gray-400 ml-2" id="inv-yoav-active-pct">(0%)</div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-1000" id="inv-yoav-active-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GLOBAL SECONDARY CARDS -->
+                    <div class="col-span-1 flex flex-col gap-4">
+                        <div class="bg-gray-100 p-5 rounded-xl border border-gray-200 shadow-inner">
+                            <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Orizis Global Capital</div>
+                            <div class="text-2xl font-black text-gray-800 mt-1" id="inv-global-total">0 ZMW</div>
+                        </div>
+                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 shadow-inner">
+                            <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">Global Available For Loans</div>
+                            <div class="text-2xl font-black text-green-700 mt-1" id="inv-global-balance">0 ZMW</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Your Active Yield Generating Assets</h3>
+                        <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
+                            Target Yield: 3.33% / mo
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="investor-asset-list" class="space-y-3">
+                            <div class="text-center text-gray-400 py-10 font-medium">Waiting for new loans to be approved and assigned...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Custom Modal Overlay -->
-    <div id="custom-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform transition-all">
-            <h3 id="modal-title" class="text-xl font-bold mb-3 text-gray-800"></h3>
-            <p id="modal-message" class="text-gray-600 mb-6 text-lg"></p>
-            <div class="flex justify-end gap-3">
-                <button id="modal-cancel-btn" class="px-5 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg hidden font-medium transition">ביטול</button>
-                <button id="modal-ok-btn" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-md transition">אישור</button>
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hide items-center justify-center flex">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative transform scale-95 transition-transform duration-300" id="login-box">
+            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-2xl font-black text-brand-dark mb-2">Portal Login</h3>
+            <p class="text-sm text-gray-500 mb-6">Access Admin or Investor dashboard.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Username</label>
+                    <input type="text" id="login-user" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
+                    <input type="password" id="login-pass" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-brand-gold outline-none">
+                </div>
+                <button onclick="processLogin()" class="w-full bg-brand-dark text-brand-gold font-bold py-3 rounded-lg hover:bg-gray-800 transition">Authenticate</button>
+            </div>
+            
+            <div class="mt-4 text-xs text-gray-400 text-center">
+                Hint: YOAV/YOAVH for investor, ADMIN/ADMIN for admin.
             </div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        //  הגדרות Firebase
+        // FIREBASE CLOUD SETUP
         // ==========================================
         const firebaseConfig = {
-            apiKey: "AIzaSyCYd3UQO4d1OQN23quXTwMj1WK2wq0chX4",
-            authDomain: "tiyul-f886a.firebaseapp.com",
-            projectId: "tiyul-f886a",
-            storageBucket: "tiyul-f886a.firebasestorage.app",
-            messagingSenderId: "644534839473",
-            appId: "1:644534839473:web:f7632f361d24183e161a90",
-            measurementId: "G-D54PY1YFPQ",
-            databaseURL: "https://tiyul-f886a-default-rtdb.europe-west1.firebasedatabase.app" 
+            apiKey: "AIzaSyBcmSupcIIhaJ3vpjqs6cMwxgfKNnvvaks",
+            authDomain: "oriziscapital.firebaseapp.com",
+            projectId: "oriziscapital",
+            storageBucket: "oriziscapital.firebasestorage.app",
+            messagingSenderId: "777072849800",
+            appId: "1:777072849800:web:acb87debd6a85179b6003d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Global Application State
+        const state = {
+            pendingLoans: [],
+            activeInvestorAssets: [],
+            documentsUploaded: false,
+            track: 'personal',
+            hasCollateral: false,
+            partners: 1,
+            global: { total: 6336000, balance: 892000 },
+            investor: { total: 777600, activePct: 26 }
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.database();
-
-        // רשימת כל המשתתפים והלשוניות
-        const people = [
-            "יוני", "חנה", "ליאור", "אייל", "הילה", "יובל", 
-            "ציוד כללי פרידמן משמר", 
-            "עוזיאל", "שרונה", "להבה", "אליה", "דביר", "הלל", 
-            "ציוד כללי פרידמן אדורה", 
-            "ציוד כללי משותף"
-        ];
-        
-        let appData = { items: {}, avatars: {} };
-        let currentTab = people[0];
-        let isEditMode = false;
-
-        const syncStatus = document.getElementById('sync-status');
-
-        // האזנה לשינויים בענן
-        db.ref('/').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                appData.items = data.items || {};
-                appData.avatars = data.avatars || {};
-            } else {
-                appData = { items: {}, avatars: {} };
-            }
-            
-            // בדיקה וייצור נתונים חסרים למשתתפים חדשים
-            generateInitialData();
-
-            syncStatus.innerHTML = '<i class="fas fa-cloud-check text-green-300 mr-1"></i> מסונכרן';
-            // טעינה ישירה של האפליקציה (ללא מסך משתמש)
-            renderApp();
-        }, (error) => {
-            syncStatus.innerHTML = '<i class="fas fa-exclamation-triangle text-red-300 mr-1"></i> שגיאת חיבור';
-            showModal('שגיאה', 'לא ניתן להתחבר לענן. בדקו חיבור לאינטרנט.');
-        });
-
-        function showModal(title, message, showCancel = false, onOk = null) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-message').innerText = message;
-            const modal = document.getElementById('custom-modal');
-            const cancelBtn = document.getElementById('modal-cancel-btn');
-            const okBtn = document.getElementById('modal-ok-btn');
-            
-            cancelBtn.style.display = showCancel ? 'block' : 'none';
-            
-            const newOkBtn = okBtn.cloneNode(true);
-            okBtn.parentNode.replaceChild(newOkBtn, okBtn);
-            const newCancelBtn = cancelBtn.cloneNode(true);
-            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-
-            newOkBtn.onclick = () => {
-                modal.classList.add('hidden');
-                if (onOk) onOk();
-            };
-            
-            newCancelBtn.onclick = () => {
-                modal.classList.add('hidden');
-            };
-
-            modal.classList.remove('hidden');
-        }
-
-        function renderApp() {
-            renderTabs();
-            renderContent();
-            updateTotalProgress();
-        }
-
-        function renderTabs() {
-            const container = document.getElementById('tabs-container');
-            container.innerHTML = '';
-
-            people.forEach(person => {
-                const isActive = person === currentTab;
-                const tabClass = isActive ? 'tab-active' : 'tab-inactive';
-                
-                let total = 0, packed = 0;
-                if(appData.items[person]) {
-                    Object.values(appData.items[person]).forEach(item => {
-                        total++;
-                        if(item.packed) packed++;
-                    });
+        // Real-Time Cloud Listener
+        function initFirebaseSync() {
+            db.collection('orizis_data').doc('system_state').onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    state.global = data.global || state.global;
+                    state.investor = data.investor || state.investor;
+                    state.pendingLoans = data.pendingLoans || [];
+                    state.activeInvestorAssets = data.activeInvestorAssets || [];
+                    
+                    updateAdminInputs();
+                    renderAdminPanel();
+                    renderInvestorPanel();
+                } else {
+                    saveStateToCloud(false);
                 }
-                const progressText = total > 0 ? `${packed}/${total}` : '';
-                const isDone = (packed === total && total > 0);
-                const progressColor = isDone ? 'text-green-500 font-bold' : 'text-gray-500';
+            });
+        }
 
-                const btn = document.createElement('button');
-                btn.className = `px-5 py-3 whitespace-nowrap text-sm flex-shrink-0 transition-colors border-b-2 ${isActive ? 'border-indigo-600 text-indigo-700 font-bold bg-indigo-50/50' : 'border-transparent hover:border-gray-300'}`;
-                btn.innerHTML = `
-                    <div class="flex flex-col items-center gap-1">
-                        <span class="text-base">${person}</span>
-                        ${total > 0 ? `<span class="text-xs bg-gray-100 px-2 py-0.5 rounded-full ${progressColor}">${isDone ? '<i class="fas fa-check mr-1"></i>' : ''}${progressText}</span>` : ''}
+        // Push State to Cloud
+        function saveStateToCloud(showNotif = false) {
+            db.collection('orizis_data').doc('system_state').set({
+                global: state.global,
+                investor: state.investor,
+                pendingLoans: state.pendingLoans,
+                activeInvestorAssets: state.activeInvestorAssets
+            }).then(() => {
+                if(showNotif) showToast('Success', 'Data synced to global cloud successfully.', 'success');
+            }).catch((error) => {
+                console.error("Cloud sync error: ", error);
+                showToast('Error', 'Failed to connect to cloud. Check Firestore rules.', 'error');
+            });
+        }
+
+        // ==========================================
+        // LIVE PREVIEW CALCULATION (Auto-updates while typing)
+        // ==========================================
+        function previewAdminCalculations() {
+            let oldActiveVal = (state.investor.total * state.investor.activePct) / 100;
+            let newGlobalTotal = parseFloat(document.getElementById('admin-global-total').value) || 0;
+            let newYoavTotal = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
+            let newYoavPct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
+
+            let newActiveVal = (newYoavTotal * newYoavPct) / 100;
+            let globalTotalDiff = newGlobalTotal - state.global.total; 
+            let yoavActiveDiff = newActiveVal - oldActiveVal;          
+
+            let adjustedBalance = state.global.balance + globalTotalDiff - yoavActiveDiff;
+            if (adjustedBalance < 0) adjustedBalance = 0; 
+
+            document.getElementById('admin-global-balance').value = adjustedBalance;
+        }
+
+        function saveInvestorData() {
+            let oldActiveVal = (state.investor.total * state.investor.activePct) / 100;
+            let newGlobalTotal = parseFloat(document.getElementById('admin-global-total').value) || 0;
+            let newYoavTotal = parseFloat(document.getElementById('admin-yoav-total').value) || 0;
+            let newYoavPct = parseFloat(document.getElementById('admin-yoav-pct').value) || 0;
+
+            let newActiveVal = (newYoavTotal * newYoavPct) / 100;
+            let globalTotalDiff = newGlobalTotal - state.global.total; 
+            let yoavActiveDiff = newActiveVal - oldActiveVal;          
+
+            let adjustedBalance = state.global.balance + globalTotalDiff - yoavActiveDiff;
+            if (adjustedBalance < 0) adjustedBalance = 0; 
+
+            state.global.total = newGlobalTotal;
+            state.global.balance = adjustedBalance;
+            state.investor.total = newYoavTotal;
+            state.investor.activePct = newYoavPct;
+            
+            saveStateToCloud(true);
+        }
+
+        // ==========================================
+        // UI & CALCULATOR LOGIC
+        // ==========================================
+        const DOM = {
+            amountInput: document.getElementById('calc-amount'),
+            amountSlider: document.getElementById('calc-amount-slider'),
+            govBox: document.getElementById('gov-code-box'),
+            govCode: document.getElementById('gov-emp-code'),
+            monthsSlider: document.getElementById('calc-months'),
+            monthsDisplay: document.getElementById('calc-months-display'),
+            resMonthly: document.getElementById('res-monthly'),
+            resWeekly: document.getElementById('res-weekly'),
+            collateralInfo: document.getElementById('collateral-info'),
+            colReqVal: document.getElementById('collateral-required-val'),
+            graceNote: document.getElementById('grace-note'),
+            bannerTitle: document.getElementById('banner-title'),
+            bannerSubtitle: document.getElementById('banner-subtitle'),
+            chilimbaSection: document.getElementById('chilimba-section'),
+            partnerList: document.getElementById('partner-list'),
+            partnerCountBadge: document.getElementById('partner-count-badge'),
+            partnerSplitInfo: document.getElementById('partner-split-info'),
+            splitCount: document.getElementById('split-count'),
+            resPerPartner: document.getElementById('res-per-partner'),
+            btnAddPartner: document.getElementById('btn-add-partner'),
+            docReqText: document.getElementById('doc-req-text')
+        };
+
+        const marketingCopy = {
+            personal: { t: "Personal Finance", s: "Fast, secure loans tailored for your daily needs." },
+            student: { t: "Invest in Your Future 🎓", s: "Special rates for students. Focus on studies, not stress." },
+            farmer: { t: "Grow With Us 🌾", s: "Enjoy up to 3 Months Grace Period for your harvest." },
+            business: { t: "Build Your Dream 💼", s: "Get 1 Month Grace Period to launch your new venture." },
+            gov: { t: "Secure & Simple 🏛️", s: "Direct salary deduction for instant VIP approval." },
+            partner: { t: "Chilimba Access 🤝", s: "Premium priority processing for our Chilimba network." }
+        };
+
+        function updateDynamicDocs() {
+            let text = "Click to upload ID (NRC) & Proof of Income";
+            if (state.track === 'student') text = "Click to upload ID (NRC) & Valid Student ID";
+            if (state.track === 'gov') text = "Click to upload ID (NRC) & Government Payslip";
+            if (state.track === 'partner') text = "Click to upload IDs (NRC) for all Chilimba members";
+            if (state.hasCollateral) text += " + Photos/Proof of Asset";
+            DOM.docReqText.innerText = text;
+        }
+
+        function selectTrack(trackId) {
+            state.track = trackId;
+            document.querySelectorAll('.track-card').forEach(card => card.classList.remove('active'));
+            document.getElementById('track-' + trackId).classList.add('active');
+
+            if (trackId === 'gov') DOM.govBox.classList.remove('hide');
+            else { DOM.govBox.classList.add('hide'); DOM.govCode.value = ''; }
+
+            if (trackId === 'partner') {
+                DOM.chilimbaSection.classList.remove('hide');
+            } else {
+                DOM.chilimbaSection.classList.add('hide');
+                state.partners = 1;
+                DOM.partnerList.innerHTML = '';
+                DOM.partnerCountBadge.innerText = `1 / 10`;
+                DOM.btnAddPartner.classList.remove('hide');
+            }
+
+            if (trackId === 'farmer' || trackId === 'business') DOM.graceNote.classList.remove('hide');
+            else DOM.graceNote.classList.add('hide');
+
+            DOM.bannerTitle.innerText = marketingCopy[trackId].t;
+            DOM.bannerSubtitle.innerText = marketingCopy[trackId].s;
+            
+            updateDynamicDocs(); calculateSpitzer();
+        }
+
+        function setCollateral(value) {
+            state.hasCollateral = value;
+            document.getElementById('col-no').classList.remove('active');
+            document.getElementById('col-yes').classList.remove('active');
+            
+            if (value) document.getElementById('col-yes').classList.add('active');
+            else document.getElementById('col-no').classList.add('active');
+            
+            updateDynamicDocs(); calculateSpitzer();
+        }
+
+        function syncAmount(source) {
+            if (source === 'num') {
+                let val = parseFloat(DOM.amountInput.value);
+                if(val < 500) val = 500;
+                if(val > 50000) val = 50000;
+                DOM.amountSlider.value = val;
+            } else {
+                DOM.amountInput.value = DOM.amountSlider.value;
+            }
+            calculateSpitzer();
+        }
+
+        function calculateSpitzer() {
+            let p = parseFloat(DOM.amountInput.value) || 0;
+            let n = parseInt(DOM.monthsSlider.value) || 12;
+            let hasCollateral = state.hasCollateral;
+            let track = state.track;
+
+            DOM.monthsDisplay.innerText = n + " Months";
+            document.querySelectorAll('.amount-requested').forEach(el => el.innerText = p.toLocaleString());
+
+            if (hasCollateral) {
+                DOM.collateralInfo.classList.remove('hide');
+                DOM.collateralInfo.classList.add('flex');
+                let requiredValue = p / 0.40;
+                DOM.colReqVal.innerText = requiredValue.toLocaleString();
+            } else {
+                DOM.collateralInfo.classList.add('hide');
+                DOM.collateralInfo.classList.remove('flex');
+            }
+
+            let monthlyRate = hasCollateral ? (0.7992 / 12) : 0.12;
+            if (track === 'student') monthlyRate = Math.max(0.01, monthlyRate - 0.02);
+            if (track === 'mother') monthlyRate = Math.max(0.01, monthlyRate - 0.01);
+
+            let pmt = 0;
+            if (n > 0 && p > 0) {
+                pmt = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+            }
+
+            let monthlyNum = Math.round(pmt);
+            let weeklyNum = Math.round(pmt / 4.33);
+
+            DOM.resMonthly.innerText = monthlyNum.toLocaleString();
+            DOM.resWeekly.innerText = weeklyNum.toLocaleString();
+
+            if (track === 'partner' && state.partners > 1) {
+                DOM.partnerSplitInfo.classList.remove('hide');
+                DOM.partnerSplitInfo.classList.add('flex');
+                DOM.splitCount.innerText = state.partners;
+                let perPartner = Math.round(weeklyNum / state.partners);
+                DOM.resPerPartner.innerText = perPartner.toLocaleString();
+            } else {
+                DOM.partnerSplitInfo.classList.add('hide');
+                DOM.partnerSplitInfo.classList.remove('flex');
+            }
+        }
+
+        function addPartner() {
+            if (state.partners >= 10) return;
+            state.partners++;
+            
+            const partnerDiv = document.createElement('div');
+            partnerDiv.className = 'flex gap-2 items-center bg-white p-2 rounded-lg border border-blue-100 shadow-sm animate-fade-in';
+            partnerDiv.id = `partner-${state.partners}`;
+            partnerDiv.innerHTML = `
+                <div class="bg-blue-100 text-blue-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold flex-shrink-0">${state.partners}</div>
+                <input type="text" placeholder="Partner Name" class="w-1/2 p-2 border-none focus:ring-0 outline-none text-sm bg-transparent">
+                <input type="text" placeholder="NRC Number" class="w-1/2 p-2 border-none focus:ring-0 outline-none text-sm bg-transparent border-l border-gray-100">
+                <button onclick="removePartner(${state.partners})" class="text-red-400 hover:text-red-600 p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+            DOM.partnerList.appendChild(partnerDiv);
+            updatePartnerUI();
+        }
+
+        function removePartner(id) {
+            const partnerDiv = document.getElementById(`partner-${id}`);
+            if (partnerDiv) {
+                partnerDiv.remove();
+                state.partners--;
+                let currentCount = 1;
+                Array.from(DOM.partnerList.children).forEach(child => {
+                    currentCount++;
+                    child.id = `partner-${currentCount}`;
+                    child.querySelector('div').innerText = currentCount;
+                    child.querySelector('button').setAttribute('onclick', `removePartner(${currentCount})`);
+                });
+                updatePartnerUI();
+            }
+        }
+
+        function updatePartnerUI() {
+            DOM.partnerCountBadge.innerText = `${state.partners} / 10`;
+            DOM.btnAddPartner.classList.toggle('hide', state.partners >= 10);
+            calculateSpitzer();
+        }
+
+        function handleFileUpload(input) {
+            if (input.files.length > 0) {
+                state.documentsUploaded = true;
+                const fileCount = document.getElementById('file-count');
+                fileCount.classList.remove('hide');
+                fileCount.innerText = `${input.files.length} document(s) securely attached.`;
+            }
+        }
+
+        function submitLoanApplication() {
+            const appName = document.getElementById('app-name').value.trim();
+            if (!appName) return showToast('Error', 'Please enter Applicant Name.', 'error');
+            if (!state.documentsUploaded) return showToast('Error', 'Please upload required documents first.', 'error');
+            
+            let track = state.track;
+            if (track === 'gov' && DOM.govCode.value.trim() === '') {
+                return showToast('Error', 'Government Employee ID is required for this track.', 'error');
+            }
+
+            const loanRequest = {
+                id: 'LN-' + Math.floor(Math.random() * 10000),
+                amount: parseFloat(DOM.amountInput.value),
+                months: parseInt(DOM.monthsSlider.value),
+                track: track,
+                hasCollateral: state.hasCollateral,
+                weekly: parseInt(DOM.resWeekly.innerText.replace(/,/g, '')),
+                date: new Date().toLocaleDateString()
+            };
+
+            state.pendingLoans.push(loanRequest);
+            saveStateToCloud();
+
+            showToast('Success', 'Application submitted to cloud successfully!', 'success');
+            
+            state.documentsUploaded = false;
+            document.getElementById('file-count').classList.add('hide');
+            DOM.govCode.value = ''; document.getElementById('app-name').value = '';
+            document.getElementById('app-phone').value = ''; document.getElementById('app-nrc').value = '';
+        }
+
+        function showToast(title, message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<div><strong>${title}</strong><div class="text-sm mt-1 font-normal">${message}</div></div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        function showView(viewId) {
+            document.getElementById('home-view').classList.add('hide');
+            document.getElementById('admin-view').classList.add('hide');
+            document.getElementById('investor-view').classList.add('hide');
+            document.getElementById(viewId).classList.remove('hide');
+            window.scrollTo(0,0);
+        }
+
+        function toggleLoginModal() {
+            const modal = document.getElementById('login-modal');
+            const box = document.getElementById('login-box');
+            if (modal.classList.contains('hide')) {
+                modal.classList.remove('hide');
+                setTimeout(() => box.classList.remove('scale-95'), 10);
+            } else {
+                box.classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hide'), 300);
+            }
+        }
+
+        function processLogin() {
+            const user = document.getElementById('login-user').value.toUpperCase();
+            const pass = document.getElementById('login-pass').value;
+
+            if (user === 'ADMIN' && pass === 'ADMIN') {
+                toggleLoginModal(); showView('admin-view');
+                showToast('Welcome', 'Admin Cloud Dashboard loaded.', 'success');
+            } else if (user === 'YOAV' && pass === 'YOAVH') {
+                toggleLoginModal(); showView('investor-view');
+                showToast('Welcome', 'Live Investor Profile loaded.', 'info');
+            } else {
+                showToast('Access Denied', 'Invalid credentials.', 'error');
+            }
+            document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = '';
+        }
+
+        function logout() { showView('home-view'); showToast('Logged Out', 'Successfully signed out.', 'info'); }
+
+        function updateAdminInputs() {
+            document.getElementById('admin-global-total').value = state.global.total;
+            document.getElementById('admin-global-balance').value = state.global.balance;
+            document.getElementById('admin-yoav-total').value = state.investor.total;
+            document.getElementById('admin-yoav-pct').value = state.investor.activePct;
+        }
+
+        function renderAdminPanel() {
+            const list = document.getElementById('admin-loan-list');
+            document.getElementById('admin-pending-count').innerText = state.pendingLoans.length;
+
+            if (state.pendingLoans.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-400 py-10 font-medium">No pending requests right now.</div>';
+                return;
+            }
+
+            list.innerHTML = '';
+            state.pendingLoans.forEach((loan, index) => {
+                let collateralText = loan.hasCollateral ? 
+                    `<span class="text-green-600">Yes (Req Val: ${(loan.amount / 0.4).toLocaleString()} ZMW)</span>` : 
+                    `<span class="text-red-500">No</span>`;
+
+                let row = document.createElement('div');
+                row.className = 'border border-gray-200 rounded-lg p-4 flex flex-col md:flex-row justify-between items-center bg-white hover:shadow-md transition';
+                row.innerHTML = `
+                    <div class="mb-4 md:mb-0 w-full md:w-3/4">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="bg-gray-800 text-brand-gold text-xs font-bold px-2 py-1 rounded">REQ: ${loan.id}</span>
+                            <span class="text-sm font-bold text-gray-500 capitalize">Track: ${loan.track}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div><strong>Amount:</strong> ${loan.amount.toLocaleString()} ZMW</div>
+                            <div><strong>Term:</strong> ${loan.months} Months</div>
+                            <div><strong>Collateral:</strong> ${collateralText}</div>
+                            <div><strong>Expected Yield:</strong> ${loan.weekly.toLocaleString()} ZMW/week</div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/4 flex justify-end">
+                        <button onclick="approveLoan(${index})" class="w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition">
+                            Approve & Assign
+                        </button>
                     </div>
                 `;
-                btn.onclick = () => {
-                    currentTab = person;
-                    renderApp(); // קריאה ישירה לרינדור
-                };
-                container.appendChild(btn);
+                list.appendChild(row);
             });
         }
 
-        function handleAvatarUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (!file.type.startsWith('image/')) {
-                showModal('שגיאה', 'אנא בחרו קובץ תמונה חוקי.');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 150;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > MAX_SIZE) {
-                            height *= MAX_SIZE / width;
-                            width = MAX_SIZE;
-                        }
-                    } else {
-                        if (height > MAX_SIZE) {
-                            width *= MAX_SIZE / height;
-                            height = MAX_SIZE;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const base64String = canvas.toDataURL('image/jpeg', 0.7);
-
-                    if (!appData.avatars) appData.avatars = {};
-                    appData.avatars[currentTab] = base64String;
-                    db.ref('avatars/' + currentTab).set(base64String).then(() => {
-                        document.getElementById('current-avatar').src = base64String;
-                    });
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
+        function approveLoan(index) {
+            const approvedLoan = state.pendingLoans.splice(index, 1)[0];
+            state.activeInvestorAssets.push(approvedLoan);
+            saveStateToCloud();
+            showToast('Approved', `Loan ${approvedLoan.id} assigned to YOAV.`, 'success');
         }
 
-        function renderContent() {
-            const content = document.getElementById('app-content');
-            const personItems = appData.items[currentTab] || {};
+        function renderInvestorPanel() {
+            document.getElementById('inv-global-total').innerText = state.global.total.toLocaleString() + ' ZMW';
+            document.getElementById('inv-global-balance').innerText = state.global.balance.toLocaleString() + ' ZMW';
+            document.getElementById('inv-yoav-total').innerText = state.investor.total.toLocaleString() + ' ZMW';
             
-            const avatarImg = document.getElementById('current-avatar');
-            const titleElem = document.getElementById('current-person-title');
-            
-            if (appData.avatars && appData.avatars[currentTab]) {
-                avatarImg.src = appData.avatars[currentTab];
-            } else {
-                avatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentTab.split(' ')[0])}&background=random&color=fff&size=150`;
-            }
-            
-            titleElem.innerText = `הרשימה של ${currentTab}`;
+            let activeZMW = (state.investor.total * state.investor.activePct) / 100;
+            document.getElementById('inv-yoav-active-val').innerText = activeZMW.toLocaleString() + ' ZMW';
+            document.getElementById('inv-yoav-active-pct').innerText = `(${state.investor.activePct}%)`;
+            document.getElementById('inv-yoav-active-bar').style.width = `${state.investor.activePct}%`;
 
-            const grouped = {};
-            Object.keys(personItems).forEach(key => {
-                const item = personItems[key];
-                if (!grouped[item.category]) grouped[item.category] = [];
-                grouped[item.category].push({ id: key, ...item });
-            });
-
-            if (Object.keys(grouped).length === 0) {
-                let html = `<div class="text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100"><p class="text-gray-500 mb-4 text-lg">הרשימה ריקה.</p>`;
-                if(isEditMode) {
-                     html += `
-                     <div class="mt-4 p-5 bg-indigo-50 border border-indigo-100 rounded-xl">
-                        <h4 class="font-bold mb-3 text-indigo-800">הוספת פריט ראשון</h4>
-                        <input type="text" id="new-cat-empty" placeholder="קטגוריה (למשל: ביגוד)" class="w-full p-3 border border-indigo-200 rounded-lg mb-3 text-sm focus:ring-2 focus:ring-indigo-400">
-                        <input type="text" id="new-name-empty" placeholder="שם הפריט" class="w-full p-3 border border-indigo-200 rounded-lg mb-3 text-sm focus:ring-2 focus:ring-indigo-400">
-                        <input type="text" id="new-amount-empty" placeholder="כמות" class="w-full p-3 border border-indigo-200 rounded-lg mb-3 text-sm focus:ring-2 focus:ring-indigo-400">
-                        <button onclick="addNewItemEmpty()" class="w-full bg-indigo-600 text-white p-3 rounded-lg text-base font-bold hover:bg-indigo-700 transition shadow">הוסף פריט</button>
-                     </div>`;
-                }
-                html += `</div>`;
-                content.innerHTML = html;
+            const list = document.getElementById('investor-asset-list');
+            
+            if (state.activeInvestorAssets.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-400 py-10 font-medium">Waiting for new loans to be approved and assigned...</div>';
                 return;
             }
 
-            let html = '';
-            for (const [category, items] of Object.entries(grouped)) {
-                let catPacked = items.filter(i => i.packed).length;
-                let catTotal = items.length;
-                let isCatDone = catPacked === catTotal;
-
-                html += `
-                <div class="bg-white rounded-2xl shadow-sm mb-6 overflow-hidden border ${isCatDone ? 'border-green-200' : 'border-gray-200'}">
-                    <div class="${isCatDone ? 'bg-green-50' : 'bg-gray-50'} px-5 py-4 border-b ${isCatDone ? 'border-green-100' : 'border-gray-200'} flex justify-between items-center transition-colors">
-                        <h3 class="font-bold ${isCatDone ? 'text-green-800' : 'text-gray-800'} text-xl flex items-center">
-                            ${isCatDone ? '<i class="fas fa-check-circle mr-2 text-green-500"></i>' : ''} ${category}
-                        </h3>
-                        <span class="text-sm font-semibold ${isCatDone ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-700'} px-3 py-1 rounded-full shadow-inner">${catPacked}/${catTotal}</span>
+            list.innerHTML = '';
+            
+            state.activeInvestorAssets.forEach(asset => {
+                let row = document.createElement('div');
+                row.className = 'border-l-4 border-brand-gold bg-white p-4 rounded shadow-sm flex justify-between items-center';
+                row.innerHTML = `
+                    <div>
+                        <div class="text-sm font-bold text-gray-800">${asset.id} | ${asset.amount.toLocaleString()} ZMW Principal</div>
+                        <div class="text-xs text-gray-500">Term: ${asset.months} Months | Active</div>
                     </div>
-                    <ul class="divide-y divide-gray-100">
+                    <div class="text-right">
+                        <div class="text-lg font-black text-green-600">+${asset.weekly.toLocaleString()} ZMW</div>
+                        <div class="text-xs text-gray-400">per week</div>
+                    </div>
                 `;
-
-                items.forEach(item => {
-                    const checked = item.packed ? 'checked' : '';
-                    const textClass = item.packed ? 'packed-text' : 'text-gray-800';
-                    const bgClass = item.packed ? 'bg-gray-50/50' : '';
-                    
-                    html += `
-                    <li class="item-row p-4 flex justify-between items-center ${bgClass}">
-                        <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleItem('${currentTab}', '${item.id}')">
-                            <div class="relative flex items-center justify-center w-8 h-8 rounded-lg border-2 ${item.packed ? 'border-green-500 bg-green-500' : 'border-gray-300 bg-white'} transition-colors flex-shrink-0">
-                                ${item.packed ? '<i class="fas fa-check text-white text-sm"></i>' : ''}
-                            </div>
-                            <div>
-                                <p class="font-bold ${textClass} text-lg">${item.name}</p>
-                                <p class="text-sm text-gray-500 mt-1"><span class="font-semibold bg-gray-100 px-2 py-0.5 rounded text-gray-600 mr-1">כמות: ${item.amount}</span> ${item.note ? `<span class="text-gray-400">|</span> ${item.note}` : ''}</p>
-                            </div>
-                        </div>
-                    `;
-
-                    if (isEditMode) {
-                        html += `
-                        <div class="flex gap-2 mr-3">
-                            <button onclick="editExistingItem('${currentTab}', '${item.id}', '${item.name.replace(/'/g, "\\'")}', '${item.amount}', '${(item.note||'').replace(/'/g, "\\'")}')" class="text-blue-500 bg-blue-50 p-2.5 rounded-xl hover:bg-blue-100 transition"><i class="fas fa-pen"></i></button>
-                            <button onclick="deleteItem('${currentTab}', '${item.id}')" class="text-red-500 bg-red-50 p-2.5 rounded-xl hover:bg-red-100 transition"><i class="fas fa-trash"></i></button>
-                        </div>`;
-                    }
-                    html += `</li>`;
-                });
-
-                if (isEditMode) {
-                    html += `
-                    <li class="p-4 bg-gray-50 border-t border-dashed border-gray-300">
-                        <div class="flex flex-col gap-3">
-                            <input type="text" id="new-name-${category}" placeholder="שם הפריט החדש" class="w-full p-3 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-400 shadow-sm">
-                            <div class="flex flex-col sm:flex-row gap-2">
-                                <input type="text" id="new-amount-${category}" placeholder="כמות" class="w-full sm:w-1/3 p-3 border border-gray-300 rounded-lg text-base shadow-sm">
-                                <input type="text" id="new-note-${category}" placeholder="הערה (אופציונלי)" class="w-full sm:w-2/3 p-3 border border-gray-300 rounded-lg text-base shadow-sm">
-                            </div>
-                            <button onclick="addNewItem('${currentTab}', '${category}')" class="w-full bg-green-500 text-white px-5 py-3 rounded-lg font-bold shadow-md hover:bg-green-600 transition"><i class="fas fa-plus mr-1"></i> הוסף פריט</button>
-                        </div>
-                    </li>`;
-                }
-
-                html += `</ul></div>`;
-            }
-            content.innerHTML = html;
-        }
-
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const btn = document.getElementById('editToggleBtn');
-            btn.innerHTML = isEditMode ? '<i class="fas fa-check mr-1"></i> סיום עריכה' : '<i class="fas fa-pen mr-1"></i> עריכה';
-            btn.classList.toggle('bg-red-500', isEditMode);
-            btn.classList.toggle('text-white', isEditMode);
-            btn.classList.toggle('bg-white/20', !isEditMode);
-            renderContent();
-        }
-
-        function toggleItem(person, itemId) {
-            if(isEditMode) return;
-            const currentState = appData.items[person][itemId].packed;
-            db.ref(`items/${person}/${itemId}/packed`).set(!currentState);
-        }
-
-        function deleteItem(person, itemId) {
-            showModal('מחיקת פריט', 'האם אתם בטוחים שברצונכם למחוק פריט זה מהרשימה?', true, () => {
-                db.ref(`items/${person}/${itemId}`).remove();
+                list.appendChild(row);
             });
         }
 
-        function addNewItem(person, category) {
-            const nameInput = document.getElementById(`new-name-${category}`);
-            const amountInput = document.getElementById(`new-amount-${category}`);
-            const noteInput = document.getElementById(`new-note-${category}`);
-            
-            if(!nameInput.value.trim()) {
-                showModal('חסר שם', 'יש להזין שם לפריט החדש.');
-                return;
-            }
-
-            const newItem = {
-                category: category,
-                name: nameInput.value.trim(),
-                amount: amountInput.value.trim() || "1",
-                note: noteInput.value.trim(),
-                packed: false
-            };
-
-            db.ref(`items/${person}`).push(newItem);
-        }
-
-        function addNewItemEmpty() {
-            const cat = document.getElementById('new-cat-empty').value.trim() || 'כללי';
-            const name = document.getElementById('new-name-empty').value.trim();
-            const amount = document.getElementById('new-amount-empty').value.trim() || "1";
-            
-            if(!name) {
-                showModal('שגיאה', 'חובה להזין שם פריט');
-                return;
-            }
-
-            const newItem = { category: cat, name: name, amount: amount, note: "", packed: false };
-            db.ref(`items/${currentTab}`).push(newItem);
-        }
-
-        function editExistingItem(person, itemId, oldName, oldAmount, oldNote) {
-            const newName = prompt("ערוך שם פריט:", oldName);
-            if (newName === null) return; 
-            const newAmount = prompt("ערוך כמות:", oldAmount);
-            if (newAmount === null) return;
-            const newNote = prompt("ערוך הערה:", oldNote);
-            if (newNote === null) return;
-
-            db.ref(`items/${person}/${itemId}`).update({
-                name: newName.trim() || oldName,
-                amount: newAmount.trim() || oldAmount,
-                note: newNote.trim()
-            });
-        }
-
-        function updateTotalProgress() {
-            let total = 0, packed = 0;
-            
-            Object.values(appData.items || {}).forEach(personItems => {
-                Object.values(personItems).forEach(item => {
-                    total++;
-                    if(item.packed) packed++;
-                });
-            });
-
-            const percent = total === 0 ? 0 : Math.round((packed / total) * 100);
-            document.getElementById('total-progress-bar').style.width = `${percent}%`;
-            document.getElementById('total-progress-text').innerText = `התקדמות כללית: ${percent}% (${packed}/${total} פריטים נארזו)`;
-        }
-
-        function getBaseListForPerson(personName) {
-            let list = [
-                { category: "ביגוד יומיום", name: "חולצות קצרות", amount: "8", note: "מכונת כביסה בדרך" },
-                { category: "ביגוד יומיום", name: "מכנסיים קצרים", amount: "5", note: "" },
-                { category: "ביגוד יומיום", name: "מכנסיים ארוכים", amount: "3", note: "" },
-                { category: "ביגוד יומיום", name: "לבנים / תחתונים", amount: "10", note: "" },
-                { category: "ביגוד יומיום", name: "גרביים", amount: "8", note: "" },
-                { category: "ביגוד יומיום", name: "פיג'מה / בגדי שינה", amount: "2", note: "" },
-                
-                { category: "ביגוד חם (לאוסטריה)", name: "מעיל פליז / סופטשל", amount: "1", note: "חובה לפסגות המושלגות" },
-                { category: "ביגוד חם (לאוסטריה)", name: "חולצות ארוכות (בסיס)", amount: "2", note: "שיטת הבצל" },
-                { category: "ביגוד חם (לאוסטריה)", name: "כובע גרב וכפפות", amount: "1", note: "חובה להרים!" },
-                
-                { category: "הנעלה", name: "נעלי הליכה סגורות / ספורט", amount: "1", note: "נוחות לטיולים" },
-                { category: "הנעלה", name: "סנדלים נוחים", amount: "1", note: "" },
-                { category: "הנעלה", name: "כפכפים", amount: "1", note: "למקלחות ולבריכה" },
-                
-                { category: "בריכה וים", name: "בגדי ים", amount: "2", note: "" },
-                { category: "בריכה וים", name: "חולצת הגנה מהשמש UV", amount: "1", note: "" },
-                { category: "בריכה וים", name: "כובע שמש", amount: "1", note: "" },
-                
-                { category: "היגיינה ורחצה", name: "תיק רחצה אישי", amount: "1", note: "מברשת, משחה, דאודורנט, סבון" },
-                { category: "היגיינה ורחצה", name: "מגבת רחצה", amount: "1", note: "רצוי מיקרופייבר" },
-                { category: "היגיינה ורחצה", name: "מגבת בריכה/ים", amount: "1", note: "" }
-            ];
-
-            // תוספות דת
-            if (["עוזיאל", "דביר", "אליה", "יוני", "ליאור", "אייל", "הלל"].includes(personName)) {
-                list.push({ category: "דת ורוח", name: "כיפות", amount: "3", note: "" });
-                list.push({ category: "דת ורוח", name: "ציצית", amount: "3", note: "" });
-            }
-            if (["עוזיאל", "דביר", "אליה", "יוני", "ליאור", "אייל"].includes(personName)) {
-                list.push({ category: "דת ורוח", name: "תפילין", amount: "1", note: "לא לשכוח!" });
-            }
-            if (["עוזיאל", "יוני"].includes(personName)) {
-                list.push({ category: "דת ורוח", name: "טלית", amount: "1", note: "לשבתות" });
-            }
-
-            // תוספות מיוחדות
-            if (personName === "הילה" || personName === "להבה") {
-                list.push({ category: "ביגוד יומיום", name: "גוזיות", amount: "5", note: "" });
-            }
-
-            // תוספות בנות/נשים לשבת
-            if (["חנה", "שרונה", "הילה", "להבה", "הלל", "יובל"].includes(personName)) {
-                list.push({ category: "ביגוד שבת", name: "שמלות / חצאיות וחולצות", amount: "2", note: "לשבתות בטיול" });
-            } else {
-                list.push({ category: "ביגוד שבת", name: "חולצות מכופתרות", amount: "2", note: "לשבתות" });
-                list.push({ category: "ביגוד שבת", name: "מכנסיים חגיגיים", amount: "2", note: "" });
-            }
-
-            return list;
-        }
-
-        function generateInitialData() {
-            people.forEach(person => {
-                if (!appData.items[person] || Object.keys(appData.items[person]).length === 0) {
-                    let itemsArray = [];
-                    
-                    if (person === "ציוד כללי פרידמן משמר") {
-                        itemsArray = [
-                            { category: "לינה", name: "סדינים ציפות וכריות", amount: "6 סטים", note: "לארוז בצ'ימידנים רכים" },
-                            { category: "לינה", name: "שמיכות פליז/מעבר", amount: "6 שמיכות", note: "קר בלילות!" },
-                            { category: "לינה", name: "כריות שינה", amount: "6", note: "מהבית" },
-                            { category: "שבת וכשרות", name: "כלים מפלסטיק קשיח / חד פעמי", amount: "לכולם", note: "" },
-                            { category: "שבת וכשרות", name: "סירים ומחבתות", amount: "3", note: "מוטבלים" },
-                            { category: "שבת וכשרות", name: "פלטת שבת", amount: "1", note: "לוודא תאימות מתח לקרוואן" },
-                            { category: "שבת וכשרות", name: "מיחם קטן / תרמוס", amount: "1", note: "למים חמים בשבת" },
-                            { category: "שבת וכשרות", name: "נרונים, הבדלה, גביע קידוש", amount: "1 ערכה", note: "" },
-                            { category: "שבת וכשרות", name: "מפה לשבת וכיסוי חלה", amount: "1", note: "" },
-                            { category: "שבת וכשרות", name: "קופסאות פלסטיק למקרר", amount: "4", note: "" },
-                            { category: "מסמכים", name: "דרכונים ורישיון בינלאומי", amount: "לכולם", note: "" }
-                        ];
-                    } else if (person === "ציוד כללי פרידמן אדורה") {
-                         itemsArray = [
-                            { category: "לינה", name: "סדינים ציפות וכריות", amount: "לפי כמות מיטות", note: "לארוז בצ'ימידנים רכים" },
-                            { category: "לינה", name: "שמיכות פליז/מעבר", amount: "לכולם", note: "קר בלילות באוסטריה" },
-                            { category: "לינה", name: "כריות שינה", amount: "לכולם", note: "מהבית" },
-                            { category: "שבת וכשרות", name: "כלים מפלסטיק קשיח / חד פעמי", amount: "לכולם", note: "" },
-                            { category: "שבת וכשרות", name: "סירים ומחבתות", amount: "3", note: "מוטבלים" },
-                            { category: "שבת וכשרות", name: "פלטת שבת", amount: "1", note: "לוודא תאימות מתח לקרוואן" },
-                            { category: "שבת וכשרות", name: "נרונים, כוס קידוש", amount: "1", note: "" },
-                            { category: "מסמכים", name: "דרכונים ורישיון בינלאומי", amount: "לכולם", note: "" }
-                        ];
-                    } else if (person === "ציוד כללי משותף") {
-                        itemsArray = [
-                            { category: "פנאי", name: "משחק אליאס", amount: "1", note: "" },
-                            { category: "פנאי", name: "קלפים וטאקי", amount: "1", note: "" },
-                            { category: "אוכל משותף", name: "פקל קפה", amount: "1", note: "" },
-                            { category: "ציוד נוסף", name: "מתאמי חשמל לאירופה", amount: "4", note: "" },
-                            { category: "ציוד נוסף", name: "ערכת עזרה ראשונה גדולה", amount: "1", note: "כולל פלסטרים ותרופות" },
-                            { category: "ציוד נוסף", name: "כדורים נגד בחילות", amount: "2 קופסאות", note: "לכבישים מפותלים" }
-                        ];
-                    } else if (person === "יובל") {
-                        itemsArray = [
-                            { category: "ציוד תינוקות", name: "חיתולים", amount: "1 חבילה", note: "להתחלה" },
-                            { category: "ציוד תינוקות", name: "מגבונים", amount: "5 חבילות", note: "" },
-                            { category: "ציוד תינוקות", name: "משחת החתלה / סבון תינוקות", amount: "1", note: "" },
-                            { category: "ציוד תינוקות", name: "מנשא גב / טיולון קומפקטי", amount: "1", note: "מנשא חובה למסלולים" },
-                            { category: "ציוד תינוקות", name: "בקבוקים ומוצצים", amount: "מספר יחידות", note: "" },
-                            { category: "ביגוד יומיום", name: "בגדי גוף / חולצות", amount: "10", note: "" },
-                            { category: "ביגוד יומיום", name: "מכנסיים", amount: "10", note: "" },
-                            { category: "ביגוד חם (לאוסטריה)", name: "מעיל פליז / חם", amount: "2", note: "" },
-                            { category: "בריכה וים", name: "בגדי ים וחולצת UV", amount: "3", note: "" }
-                        ];
-                    } else {
-                        itemsArray = getBaseListForPerson(person);
-                    }
-
-                    const personItemsObj = {};
-                    itemsArray.forEach((item, index) => {
-                        const id = `item_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 5)}`;
-                        personItemsObj[id] = { ...item, packed: false };
-                    });
-                    
-                    db.ref(`items/${person}`).set(personItemsObj);
-                }
-            });
-        }
-
-        function exportToExcel() {
-            if (!appData.items || Object.keys(appData.items).length === 0) {
-                showModal('שגיאה', 'אין נתונים לייצוא');
-                return;
-            }
-
-            let csvContent = "\uFEFF"; 
-            csvContent += "עבור,קטגוריה,פריט,כמות,הערות,נארז?\n";
-
-            people.forEach(person => {
-                if(appData.items[person]) {
-                    Object.values(appData.items[person]).forEach(item => {
-                        const name = (item.name || "").replace(/"/g, '""');
-                        const category = (item.category || "").replace(/"/g, '""');
-                        const amount = (item.amount || "").replace(/"/g, '""');
-                        const note = (item.note || "").replace(/"/g, '""');
-                        const packed = item.packed ? "כן" : "לא";
-
-                        csvContent += `"${person}","${category}","${name}","${amount}","${note}","${packed}"\n`;
-                    });
-                }
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", "רשימת_אריזה_קרוואנים.csv");
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+        window.onload = function() {
+            initFirebaseSync();
+            updateDynamicDocs();
+            calculateSpitzer();
+        };
     </script>
 </body>
 </html>
